@@ -1,0 +1,73 @@
+[user]
+  name = Clay Kaufmann
+  email = claykaufmann@gmail.com
+
+[pull]
+  rebase = false
+
+[fetch]
+  prune = true
+
+[filter "lfs"]
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  process = git-lfs filter-process
+  required = true
+
+[alias]
+  last = log -1 HEAD --stat
+  st = status
+  b = branch
+  c = commit
+  co = checkout
+  cob = checkout -b
+  ll = log --oneline
+  cm = commit -m
+  rv = remote -v
+  d = diff
+  p = push
+  pu = pull
+  a = add
+
+[init]
+  defaultBranch = main
+
+[core]
+  pager = delta
+  excludesfile = /Users/claykaufmann/.gitignore
+  autocrlf = input
+
+[pager]
+  diff = delta
+  log = delta
+  reflog = delta
+  show = delta
+
+[interactive]
+  diffFilter = delta --color-only --features=interactive
+
+[delta]
+  features = side-by-side decorations
+  syntax-theme = Dracula
+  plus-style = syntax "#003800"
+  minus-style = syntax "#3f0001"
+  navigate = true
+
+[diff]
+  colorMoved = default
+
+[delta "decorations"]
+  commit-decoration-style = bold yellow box ul
+  file-style = bold yellow ul
+  file-decoration-style = none
+  hunk-header-decoration-style = cyan box ul
+
+[delta "line-numbers"]
+  line-numbers-left-style = cyan
+  line-numbers-right-style = cyan
+  line-numbers-minus-style = 124
+  line-numbers-plus-style = 28
+
+[merge]
+  tool = meld
+

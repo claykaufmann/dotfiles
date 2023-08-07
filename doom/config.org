@@ -1,0 +1,1444 @@
+#+TITLE: Emacs Config
+#+author: Clay Kaufmann
+#+filetags: config:emacs
+This is my personal emacs config, for use with doom emacs! If you can, open this up in emacs, github does not do a great job of rendering org files.
+
+* General Config
+** Personal Information
+#+begin_src emacs-lisp
+(setq user-full-name "Clay Kaufmann"
+      user-mail-address "claykaufmann@gmail.com")
+#+end_src
+
+** Simple changes
+Make the undo limit much larger, and make jumping through words more exact.
+#+begin_src emacs-lisp
+(setq undo-limit 80000000
+      evil-want-fine-undo t
+      auto-save-default t)
+
+;; iterate through camelCase words
+(global-subword-mode 1)
+#+end_src
+
+A couple main window settings, open maximized, and then have some opacity:
+#+begin_src emacs-lisp
+(add-to-list 'initial-frame-alist '(fullscreen . maximized))
+
+;; enable transparency in emacs in darwin only (linux picom handles transparency)
+;; (cl-case system-type
+;;   ((darwin)
+;;    (set-frame-parameter (selected-frame) 'alpha '(92 . 90))
+;;    (add-to-list 'default-frame-alist '(alpha . (92 . 90))
+;;    )))
+#+end_src
+
+Swap to the new buffer with a normal window split
+#+begin_src emacs-lisp
+;; swap to new window when splitting normally
+(setq evil-vsplit-window-right t
+      evil-split-window-below t)
+#+end_src
+
+Better buffer and frame names: (thanks to [[https://tecosaur.github.io/emacs-config/config.html][tecosaur!]])
+#+begin_src emacs-lisp
+(setq doom-fallback-buffer-name "► Emacs"
+      +doom-dashboard-name "► Doom")
+
+(setq frame-title-format
+      '(""
+        (:eval
+         (if (s-contains-p org-roam-directory (or buffer-file-name ""))
+             (replace-regexp-in-string
+              ".*/[0-9]*-?" "☰ "
+              (subst-char-in-string ?_ ?  buffer-file-name))
+           "%b"))
+        (:eval
+         (let ((project-name (projectile-project-name)))
+           (unless (string= "-" project-name)
+             (format (if (buffer-modified-p)  " ◉ %s" "  ●  %s") project-name))))))
+#+end_src
+
+** Visual Settings
+*** Fonts
+Starting with fonts! My default font is the nerd font variant of Fira Code. Nerd fonts can be found [[https://www.nerdfonts.com][here]]. There are a project by Ryan Oasis, and a quite useful one at that. They allow glyphs to appear, commonly used in Terminal fonts, and other applications. My variable-pitch and serif font of choice right now is [[https://edwardtufte.github.io/et-book/][ETBookOT]], from Edward Tufte. A beautiful font. There is a system-type switch here, as in my linux desktop I want larger fonts by default.
+
+Here I set a variable to control the specific font families I want to use. If I want to swap to something else, I just need to change the family here.
+#+begin_src emacs-lisp
+;; fixed font options: (SAVED HERE FOR EASE OF USE)
+;; JetBrainsMono Nerd Font Mono
+;; CaskaydiaCove Nerd Font Mono
+;; FiraCode Nerd Font Mono
+
+;; jetbrains mono has been wonky on my mac
+(defvar clay-fixed-pitch-face "FiraCode Nerd Font Mono")
+(defvar clay-var-pitch-face "ETBookOT")
+#+end_src
+
+Set all fonts:
+#+begin_src emacs-lisp
+;; set the fallback unicode font to fira code
+(setq doom-unicode-font (font-spec :family "FiraCode Nerd Font Mono"))
+
+(cl-case system-type
+  ((gnu/linux) ; for linux
+   (setq doom-font (font-spec :family clay-fixed-pitch-face :size 18)
+         doom-big-font (font-spec :family clay-fixed-pitch-face :size 36)
+         doom-variable-pitch-font (font-spec :family clay-var-pitch-face :size 20 :height 180)
+         doom-serif-font (font-spec :family clay-var-pitch-face :size 20 :height 180)))
+
+  ((darwin) ; for mac
+   (setq doom-font (font-spec :family clay-fixed-pitch-face :size 15)
+         doom-big-font (font-spec :family clay-fixed-pitch-face :size 24)
+         doom-variable-pitch-font (font-spec :family clay-var-pitch-face :size 18 :height 180)
+         doom-serif-font (font-spec :family clay-var-pitch-face :size 18 :height 180)
+         )))
+#+end_src
+
+*** Line Numbers
+I use hybrid line numbers (current line is absolute, lines above and below are relative). I might change this at some point, but it is quite nice when in evil mode as it makes it easier to jump to different lines quickly. I also only want line numbers in programming buffers, the following accomplishes this:
+#+begin_src emacs-lisp
+;; set relative lines
+(setq display-line-numbers-type 'absolute)
+#+end_src
+
+Set a blinking cursor:
+#+begin_src emacs-lisp
+(blink-cursor-mode 1)
+#+end_src
+
+*** Modeline
+This adds icons to the modeline, increases the max length of the git branch, and makes flycheck show more information.
+#+begin_src emacs-lisp
+;; enable icons
+(setq doom-modeline-icon (display-graphic-p))
+(setq doom-modeline-major-mode-icon t)
+(setq doom-modeline-major-mode-color-icon t)
+(setq doom-modeline-buffer-state-icon t)
+
+;; increase branch max length
+(setq doom-modeline-vcs-max-length 15)
+
+;; make flycheck show more information
+(setq doom-modeline-checker-simple-format t)
+
+;; display indent info
+(setq doom-modeline-indent-info t)
+
+;; get rid of indent info (adds space)
+(setq doom-modeline-indent-info t)
+
+(setq doom-modeline-buffer-encoding nil)
+
+(setq doom-modeline-lsp t)
+
+;; display env info
+(setq doom-modeline-env-version t)
+
+;; change edited file color to orange from red (disabled for now)
+;; (custom-set-faces!
+;;   '(doom-modeline-buffer-modified :foreground "orange"))
+
+;; enable modeline icons with emacsclient (technically breaks terminal but no issues for me)
+(setq doom-modeline-icon t)
+
+(setq doom-modeline-project-detection 'auto)
+
+(setq doom-modeline-buffer-file-name-style 'file-name)
+
+(setq doom-modeline-env-python-executable "python-shell-interpreter") ; or `python-shell-interpreter'
+#+end_src
+
+*** Theme
+I switch themes consistently. The ones I use the most are ~doom-vibrant~, ~doom-gruvbox~, ~doom-material~, ~doom-dracula~, ~doom-palenight~, and ~doom-solarized-light~
+#+begin_src emacs-lisp
+(setq doom-theme 'doom-material-dark)
+#+end_src
+
+Enable the org config for doom themes:
+#+begin_src emacs-lisp
+(doom-themes-org-config)
+#+end_src
+
+*** Dashboard
+Custom ascii art banner:
+#+begin_src emacs-lisp
+(defun doom-dashboard-draw-ascii-emacs-banner-fn ()
+  (let* ((banner
+          '(",------.,---.---.,------.,------.,------.   "
+            "|      ||   |   |       ||       |          "
+            "|------'|   |   |,------||       `------.   "
+            "|       |   |   ||      ||              | _ "
+            "`------''   '   '`------^`------'`------''-'"))
+          (longest-line (apply #'max (mapcar #'length banner))))
+         (put-text-property
+          (point)
+          (dolist (line banner (point))
+            (insert (+doom-dashboard--center
+                     +doom-dashboard--width
+                     (concat
+                      line (make-string (max 0 (- longest-line (length line)))
+                                        32)))
+                    "\n"))
+          'face 'doom-dashboard-banner)))
+
+(setq +doom-dashboard-ascii-banner-fn #'doom-dashboard-draw-ascii-emacs-banner-fn)
+#+end_src
+
+Fun dashboard phrase:
+#+begin_src emacs-lisp
+(defvar splash-phrase-source-folder
+  (expand-file-name "misc/splash-phrases" doom-private-dir)
+  "A folder of text files with a fun phrase on each line.")
+
+(defvar splash-phrase-sources
+  (let* ((files (directory-files splash-phrase-source-folder nil "\\.txt\\'"))
+         (sets (delete-dups (mapcar
+                             (lambda (file)
+                               (replace-regexp-in-string "\\(?:-[0-9]+-\\w+\\)?\\.txt" "" file))
+                             files))))
+    (mapcar (lambda (sset)
+              (cons sset
+                    (delq nil (mapcar
+                               (lambda (file)
+                                 (when (string-match-p (regexp-quote sset) file)
+                                   file))
+                               files))))
+            sets))
+  "A list of cons giving the phrase set name, and a list of files which contain phrase components.")
+
+(defvar splash-phrase-set
+  (nth (random (length splash-phrase-sources)) (mapcar #'car splash-phrase-sources))
+  "The default phrase set. See `splash-phrase-sources'.")
+
+(defun splase-phrase-set-random-set ()
+  "Set a new random splash phrase set."
+  (interactive)
+  (setq splash-phrase-set
+        (nth (random (1- (length splash-phrase-sources)))
+             (cl-set-difference (mapcar #'car splash-phrase-sources) (list splash-phrase-set))))
+  (+doom-dashboard-reload t))
+
+(defvar splase-phrase--cache nil)
+
+(defun splash-phrase-get-from-file (file)
+  "Fetch a random line from FILE."
+  (let ((lines (or (cdr (assoc file splase-phrase--cache))
+                   (cdar (push (cons file
+                                     (with-temp-buffer
+                                       (insert-file-contents (expand-file-name file splash-phrase-source-folder))
+                                       (split-string (string-trim (buffer-string)) "\n")))
+                               splase-phrase--cache)))))
+    (nth (random (length lines)) lines)))
+
+(defun splash-phrase (&optional set)
+  "Construct a splash phrase from SET. See `splash-phrase-sources'."
+  (mapconcat
+   #'splash-phrase-get-from-file
+   (cdr (assoc (or set splash-phrase-set) splash-phrase-sources))
+   " "))
+
+(defun doom-dashboard-phrase ()
+  "Get a splash phrase, flow it over multiple lines as needed, and make fontify it."
+  (mapconcat
+   (lambda (line)
+     (+doom-dashboard--center
+      +doom-dashboard--width
+      (with-temp-buffer
+        (insert-text-button
+         line
+         'action
+         (lambda (_) (+doom-dashboard-reload t))
+         'face 'doom-dashboard-menu-title
+         'mouse-face 'doom-dashboard-menu-title
+         'help-echo "Random phrase"
+         'follow-link t)
+        (buffer-string))))
+   (split-string
+    (with-temp-buffer
+      (insert (splash-phrase))
+      (setq fill-column (min 70 (/ (* 2 (window-width)) 3)))
+      (fill-region (point-min) (point-max))
+      (buffer-string))
+    "\n")
+   "\n"))
+
+(defadvice! doom-dashboard-widget-loaded-with-phrase ()
+  :override #'doom-dashboard-widget-loaded
+  (setq line-spacing 0.2)
+  (insert
+   "\n\n"
+   (propertize
+    (+doom-dashboard--center
+     +doom-dashboard--width
+     (doom-display-benchmark-h 'return))
+    'face 'doom-dashboard-loaded)
+   "\n"
+   (doom-dashboard-phrase)
+   "\n"))
+#+end_src
+
+** Typing Settings
+As I accumulate more typing settings, they will go here. For now, I just disable tabs.
+(Learn why [[https://www.emacswiki.org/emacs/TabsAreEvil][tabs are evil!]])
+*** Tab Config
+Make all tabs spaces instead of tabs
+#+begin_src emacs-lisp
+(setq-default indent-tabs-mode nil)
+#+end_src
+
+Set default tab widths:
+#+begin_src emacs-lisp
+(setq-default tab-width 2)
+#+end_src
+
+** Keybindings
+*** Misc
+Add dashboard key binding:
+#+begin_src emacs-lisp
+(map! :leader :desc "Dashboard" "D" #'+doom-dashboard/open)
+#+end_src
+
+*** Dired
+Add jump to current, and peep file in dired:
+#+begin_src emacs-lisp
+(map! :leader
+      (:prefix ("d" . "dired")
+       :desc "Dired jump to current" "j" #'dired-jump)
+      (:after dired
+       (:map dired-mode-map
+        :desc "Peep-dired image previews" "d p" #'peep-dired
+        :desc "Dired view file" "d v" #'dired-view-file)))
+#+end_src
+
+*** Treemacs
+Add useful treemacs binds to edit workspaces.
+#+begin_src emacs-lisp
+(map! :leader
+      (:prefix ("T" . "treemacs")
+       :desc "Treemacs edit workspace" "w" #'treemacs-edit-workspaces)
+      (:prefix ("T" . "treemacs")
+       :desc "Treemacs next workspace" "n" #'treemacs-next-workspace)
+      (:prefix ("T" . "treemacs")
+       :desc "Treemacs switch workspace" "s" #'treemacs-switch-workspace))
+
+#+end_src
+
+*** Coding
+Add a make compile hotkey:
+#+begin_src emacs-lisp
+(map! :leader
+      (:prefix ("c")
+       :desc "Compile with make" "m" #'+make/run))
+#+end_src
+
+** Programming Languages
+*** JavaScript
+Allow ESLint to auto fix on save:
+#+begin_src emacs-lisp
+(setq lsp-eslint-auto-fix-on-save t)
+#+end_src
+
+Use prettier config to format JS on save:
+#+begin_src emacs-lisp
+(add-hook 'js2-mode-hook 'prettier-js-mode)
+(add-hook 'js-mode-hook 'prettier-js-mode)
+(add-hook 'web-mode-hook 'prettier-js-mode)
+#+end_src
+
+Disable LSP format in JS so prettier is used instead:
+#+begin_src emacs-lisp
+(setq-hook! 'js2-mode-hook +format-with-lsp nil)
+(setq-hook! 'js-mode-hook +format-with-lsp nil)
+(setq-hook! 'web-mode-hook +format-with-lsp nil)
+#+end_src
+
+*** Python
+**** Keybindings
+As I code in python a fair bit, having access to these tools without using ~M-x~ is quite useful.
+
+Add mappings for conda:
+#+begin_src emacs-lisp
+(map! :leader
+      (:prefix-map ("P" . "python")
+       (:prefix ("c" . "conda")
+        :desc "conda env activate" "a" #'conda-env-activate
+        :desc "conda env deactivate" "d" #'conda-env-deactivate)))
+#+end_src
+
+Pyenv:
+#+begin_src emacs-lisp
+(map! :leader
+      (:prefix ("P")
+       (:prefix ("v" . "pyenv")
+        :desc "set python version" "s" #'pyenv-mode-set
+        :desc "unset python version" "u" #'pyenv-mode-unset)))
+#+end_src
+
+Add mappings for poetry:
+#+begin_src emacs-lisp
+(map! :leader
+      (:prefix ("P")
+       (:prefix ("p" . "poetry")
+        :desc "poetry menu" "p" #'poetry)))
+#+end_src
+
+**** Poetry/conda
+Add ~poetry~ to path so poetry.el can find it, and set anaconda home, depending on system type
+#+begin_src emacs-lisp
+(cl-case system-type
+  ((gnu/linux)
+   (setenv "PATH" (concat ":/home/clayk/.poetry/bin" (getenv "PATH")))
+   (add-to-list 'exec-path "/home/clayk/.poetry/bin"))
+
+  ((darwin)
+   (setenv "PATH" (concat ":/Users/claykaufmann/.local/bin" (getenv "PATH")))
+   (add-to-list 'exec-path "/Users/claykaufmann/.local/bin")
+   (custom-set-variables
+    '(conda-anaconda-home "/opt/homebrew/Caskroom/miniforge/base")
+    )))
+#+end_src
+
+Enable poetry tracking mode to automatically enable poetry venvs:
+#+begin_src emacs-lisp
+(poetry-tracking-mode)
+#+end_src
+
+Set conda home directory so we can find conda virtual environments:
+#+begin_src emacs-lisp
+#+end_src
+
+Make conda env auto activate: (CURRENTLY NOT WORKING)
+#+begin_src emacs-lisp
+;; (conda-env-autoactivate-mode t)
+;; ;; if you want to automatically activate a conda environment on the opening of a file:
+;; (add-to-hook 'find-file-hook (lambda () (when (bound-and-true-p conda-project-env-path)
+;;                                           (conda-env-activate-for-buffer))))
+#+end_src
+
+Make pyright restart when conda environment changes
+#+begin_src emacs-lisp
+(use-package! lsp-pyright
+  :config
+  (add-hook 'conda-postactivate-hook (lambda () (lsp-restart-workspace)))
+  (add-hook 'conda-postdeactivate-hook (lambda () (lsp-restart-workspace))))
+#+end_src
+
+** Emacs Diary
+I thought this should go in org config, but its really technically not a part of org, although it will be heavily integrated into my agenda.
+
+Set the file location:
+#+begin_src emacs-lisp
+;; (setq diary-file "~/Dropbox/Org-Utils/diary")
+#+end_src
+
+Run calendar diary script everytime agenda is opened for the first session:
+This does not work currently, as Emacs does not have permission to access the calendar :(
+#+begin_src emacs-lisp
+;; (defun python-diary ()
+;;   (insert (shell-command-to-string (format "python ~/Dropbox/Org-Utils/mac_diary_active.py"))))
+
+;(add-hook 'org-agenda-mode-hook 'python-diary)
+#+end_src
+
+* Org Config
+Org is the main reason why I swapped to Emacs, thanks to my good friend Ben. Many of my org settings have been collected from other places, I will try to remember to cite where I can.
+
+** General Config
+Set org and org-roam directories
+#+begin_src emacs-lisp
+(setq org-directory "~/Dropbox/Sceptile/")
+(setq org-roam-directory "~/Dropbox/Sceptile/")
+#+end_src
+
+Disable electric mode in org mode to stop this weird indent issue I am having where a double return sets a crazy indent. To avoid this issue, you can edit source blocks with ~SPC M '~, or ~C-c '~
+#+begin_src emacs-lisp
+(add-hook 'org-mode-hook (lambda () (electric-indent-mode -1)))
+#+end_src
+
+Disable caching to stop an error:
+#+begin_src emacs-lisp
+(setq org-element-use-cache nil)
+#+end_src
+
+Disable company in org (it causes a ton of slowdown)
+If there is a way to allow company without causing slowdown, I'll do that here. This was taken from [[https://stackoverflow.com/questions/34652692/how-to-turn-off-company-mode-in-org-mode/34660219][this stackoverflow link]]. This should only activate on darwin, where emacs is non-native
+#+begin_src emacs-lisp
+(defun jpk/org-mode-hook ()
+  (company-mode 0))
+
+(cl-case system-type
+  ((darwin)
+   (add-hook 'org-mode-hook 'jpk/org-mode-hook)))
+#+end_src
+
+*** Latex Settings
+Add a setting for latex previews:
+#+begin_src emacs-lisp
+(setq org-latex-create-formula-image-program 'imagemagick)
+#+end_src
+
+Add latex to path to allow org mode to render it:
+#+begin_src emacs-lisp
+(setenv "PATH" (concat ":/Library/TeX/texbin/" (getenv "PATH")))
+(add-to-list 'exec-path "/Library/TeX/texbin/")
+#+end_src
+
+Add a keybinding for rendering latex:
+#+begin_src emacs-lisp
+(map! :leader
+      (:prefix ("n")
+       (:desc "render latex" "L" #'org-latex-preview)))
+#+end_src
+
+Set ~dvisvgm~ as the renderer (fixes low res latex previews in org buffers):
+#+begin_src emacs-lisp
+(setq org-latex-create-formula-image-program 'dvisvgm)
+#+end_src
+
+Increase the size of the generated latex previews:
+#+begin_src emacs-lisp
+(after! org (plist-put org-format-latex-options :scale 1.75))
+#+end_src
+
+Enable latex previews on opening of org buffer:
+#+begin_src emacs-lisp
+;; (after! org (setq org-startup-with-latex-preview t))
+#+end_src
+
+Use the ~org-fragtop~ package for easier inline latex editing:
+#+begin_src emacs-lisp
+(use-package! org-fragtog
+  :after org
+  :hook (org-mode . org-fragtog-mode) ; this auto-enables it when you enter an org-buffer, remove if you do not want this
+  :config
+  ;; whatever you want
+  )
+#+end_src
+
+Set the output export directory to be different (from [[http://rwx.io/posts/org-export-configurations/][this article]]):
+#+begin_src emacs-lisp
+;; set directory name
+(defvar org-export-output-directory "exports" "prefix of directory used for org-mode export")
+
+;; modify export function to use directory name
+(defadvice org-export-output-file-name (before org-add-export-dir activate)
+  "Modifies org-export to place exported files in a different directory"
+  (when (not pub-dir)
+    (setq pub-dir (concat org-export-output-directory))
+    (when (not (file-directory-p pub-dir))
+      (make-directory pub-dir))))
+#+end_src
+
+Leaving this modified version here in case I want to swap to different directories for different export types:
+#+begin_src emacs-lisp
+;; (defvar org-export-output-directory-prefix "export_" "prefix of directory used for org-mode export")
+
+;; (defadvice org-export-output-file-name (before org-add-export-dir activate)
+;;   "Modifies org-export to place exported files in a different directory"
+;;   (when (not pub-dir)
+;;     (setq pub-dir (concat org-export-output-directory-prefix (substring extension 1)))
+;;     (when (not (file-directory-p pub-dir))
+;;       (make-directory pub-dir))))
+#+end_src
+
+*** Inbox
+For all inbox-related things, I use a vulpea function that is based on the system name. There is one inbox file per system. The idea is to use inherited tags so all headings in an inbox file are marked with the ~REFILE~ tag. I then have an agenda view that shows all things that need to be refiled.
+
+Set the vulpea inbox file (from [[https://d12frosted.io/posts/2021-05-21-task-management-with-roam-vol7.html][thanks to Boris Buliga]]) based on system name:
+#+begin_src emacs-lisp
+(cl-case system-type
+  ((darwin)
+   (defvar vulpea-capture-inbox-file
+     "~/Dropbox/Sceptile/inbox-MBP.org"))
+  ((gnu/linux)
+   (defvar vulpea-capture-inbox-file
+     "~/Dropbox/Sceptile/inbox-hinox.org")))
+#+end_src
+
+** Task Management
+For my todo keywords, I use a fairly basic system. This may change as I delve deeper into Emacs.
+
+All tasks are marked with TODO. When I get around to it, I mark tasks as NEXT, which appear in a different section in my org agenda thanks to [[https://github.com/alphapapa/org-super-agenda][org-super-agenda]].  Upon completing, the task is marked as ~DONE~. If I cannot get to it, it is marked as ~WAIT~, and if it is blocked by another task, it is marked as ~BLKD~. Sequences are also automatically updated when changed, as mentioned in the [[https://orgmode.org/manual/Tracking-TODO-state-changes.html][org mode manual]]. The blocked and cancelled keywords, when swapped to, ask for a note, for blocked, this is used to mention what task is blocking it.
+
+I also have an ~ACTIVE~ tag for use with the org kanban board
+
+Projects are signified with ~PROJ~. When they are completed or cancelled, the ~DONE~ and ~CANC~ keywords are used. This keyword is there simply to allow me to set a schedule and a deadline for a project.
+
+Class assignments are signified with ~ASGN~. Gives me a nice TODO tag for assignments. If an assignment is large enough, sometimes I'll make a note for it using the assignment template, which takes advantage of this as well.
+
+Set the todo keyword sequence:
+#+begin_src emacs-lisp
+(after! org
+  (setq org-todo-keywords
+        '((sequence "TODO(t!)" "ACTIVE(k!)" "PROJ(p!)" "ASGN(a!)" "NEXT(n!)" "HOLD(h!)" "BLKD(b@/!)" "|" "DONE(d!)" "CANC(c@)"))))
+#+end_src
+
+After setting the keywords, give them some color to make them pop:
+#+begin_src emacs-lisp
+(after! org
+  (setq org-todo-keyword-faces
+        '(("NEXT" . "cyan2")
+          ("HOLD" . "orange")
+          ("BLKD" . "red1")
+          ("PROJ" . "gray71")
+          ("ASGN" . "DeepPink2"))))
+#+end_src
+
+Enforce todo dependencies with TODO keywords:
+#+begin_src emacs-lisp
+(setq org-enforce-todo-dependencies t)
+#+end_src
+
+Set the logging of todo changes to be put into the LOGBOOK drawer for cleaner looking todo's:
+#+begin_src emacs-lisp
+(after! org
+  (setq org-log-into-drawer "LOGBOOK"))
+#+end_src
+
+The following are a collection of useful options for clocking, most taken from [[https://writequit.org/denver-emacs/presentations/2017-04-11-time-clocking-with-org.html][Matthew Lee Hinman]], in his emacs blog series.
+#+begin_src emacs-lisp
+;; Resume clocking task when emacs is restarted
+(org-clock-persistence-insinuate)
+
+;; Save the running clock and all clock history when exiting Emacs, load it on startup
+(setq org-clock-persist t)
+
+;; Resume clocking task on clock-in if the clock is open
+(setq org-clock-in-resume t)
+
+;; prompt to resume an active clock
+(setq org-clock-persist-query-resume t)
+
+;; Save clock data and state changes and notes in the LOGBOOK drawer
+(setq org-clock-into-drawer t)
+
+;; Sometimes I change tasks I'm clocking quickly - this removes clocked tasks
+;; with 0:00 duration
+(setq org-clock-out-remove-zero-time-clocks t)
+
+;; Clock out when moving task to a done state
+(setq org-clock-out-when-done t)
+
+;; Enable auto clock resolution for finding open clocks
+(setq org-clock-auto-clock-resolution (quote when-no-clock-is-running))
+
+;; Include current clocking task in clock reports
+(setq org-clock-report-include-clocking-task t)
+
+;; use pretty things for the clocktable
+(setq org-pretty-entities t)
+#+end_src
+
+** Visuals
+[[https://zzamboni.org/post/beautifying-org-mode-in-emacs/][This article]] has some great tips for customizing org mode to look much better. Another great resource is [[https://lepisma.xyz/2017/10/28/ricing-org-mode/][Ricing up Org mode]], a short article showing a really clean config. In this section, I have used both of these articles to help bootstrap my config.
+
+Fix image width:
+#+begin_src emacs-lisp
+(setq org-image-actual-width (list 600))
+#+end_src
+
+Set the done headline text:
+#+begin_src emacs-lisp
+(custom-set-faces!
+  '(org-headline-done :foreground "#565761" :strike-through t))
+#+end_src
+
+Modify ~org-emphasis-alist~ to add highlighting of words
+#+begin_src emacs-lisp
+(after! org
+  (setq org-emphasis-alist
+        `(("*" (bold))
+          ("/" italic)
+          ("_" underline)
+          ("=" (:background "maroon" :foreground "white"))
+          ("~" org-code verbatim)
+          ("+" (:strike-through t)))))
+#+end_src
+
+*** Prose "Mode"
+When in an org document, and zen mode is enabled, org is swapped to look like a much more normal word processor.
+Specific changes in this "prose mode":
+- no line numbers
+- no hl-line-mode
+- centered text, left justified
+- variable pitch font instead of fixed pitch (defined in the doom-variable-pitch font)
+
+This code block controls most of the changes when in zen mode. This is from [[https://github.com/tecosaur/emacs-config/blob/master/config.org][tecosaur again]], with this great hook on write-room mode. I modified it a bit to more fit my needs, of disabling hl-line-mode, not disabling org-indent, and variable pitch font.
+#+begin_src emacs-lisp
+(after! writeroom-mode
+  (defun +zen-prose-org-h ()
+    (when (eq major-mode 'org-mode)
+      (setq-local display-line-numbers nil
+            visual-fill-column-width 70 ; control the width of the centering here!
+            )
+      (variable-pitch-mode 1)
+      (hl-line-mode 0)))
+  (defun +zen-nonprose-org-h ()
+    (when (eq major-mode 'org-mode)
+      (variable-pitch-mode 0)
+      (hl-line-mode 1)))
+  (pushnew! writeroom--local-variables
+            'display-line-numbers
+            'visual-fill-column-width)
+  (add-hook 'writeroom-mode-enable-hook #'+zen-prose-org-h)
+  (add-hook 'writeroom-mode-disable-hook #'+zen-nonprose-org-h))
+#+end_src
+
+I prefer to usually be in prose mode when editing org docs, so let's add a hook to turn on zen mode when entering org mode.
+#+begin_src emacs-lisp
+;; enable zen mode on org mode start
+(add-hook 'org-mode-hook '+zen/toggle)
+#+end_src
+
+The box cursor is wonky on non monospaced fonts, this block sets it to always be a bar in org mode, however it became too challenging to edit, disabled for now.
+#+begin_src emacs-lisp
+;; (add-hook 'org-mode-hook
+;;           (lambda()
+;;             (setq-local evil-normal-state-cursor 'bar)))
+
+;; (add-hook 'org-mode-hook
+;;           (lambda()
+;;             (setq-local evil-emacs-state-cursor 'bar)))
+#+end_src
+
+Set the theme to be different when typing org: (disabled for now, kind of annoying)
+If there is a way to do this on a buffer by buffer basis, that would be ideal.
+#+begin_src emacs-lisp
+;; (add-hook 'org-mode-hook
+;;           (lambda ()
+;;             (load-theme 'doom-one-light)))
+#+end_src
+
+*** Org font changes
+All font changes related to org mode are in here.
+#+begin_src emacs-lisp
+(custom-set-faces!
+  ;; ~~~~~~ HEADERS ~~~~~~
+  `(org-level-5 :height 1.05 :inherit outline-5)
+
+  '(org-level-4 :height 1.05 :inherit outline-4)
+
+  `(org-level-3 :height 1.15 :inherit outline-3 :weight bold)
+
+  `(org-level-2 :height 1.3 :inherit outline-2 :weight bold :slant italic)
+
+  `(org-level-1 :height 1.5 :inherit outline-1 :weight bold :foreground ,(doom-color 'fg))
+
+  ;; ~~~~~~ CODE ~~~~~~
+  ;; inline code
+  `(org-code :inherit (shadow fixed-pitch) :foreground ,(doom-color 'green))
+
+  ;; org-verbatim (alternative to org-code)
+  `(org-verbatim :inherit (shadow fixed-pitch))
+
+  ;; ~~~~~~ META TAGS ~~~~~~
+  ;; keyword for doc title, i.e #+TITLE
+  `(org-document-info-keyword :inherit (shadow fixed-pitch))
+
+  ;; for tags
+  `(org-tag :slant italic)
+
+  ;; org doc title
+  `(org-document-title :height 1.3 :underline nil :inherit variable-pitch)
+  `(org-document-info :foreground ,(doom-color 'orange) :inherit variable-pitch)
+
+  ;; property value
+  `(org-property-value :inherit fixed-pitch)
+
+  ;; meta lines
+  `(org-meta-line :inherit (font-lock-comment-face fixed-pitch))
+
+  ;; ~~~~~~ TABLES ~~~~~~
+  `(org-table :inherit fixed-pitch :foreground "#83a598")
+
+  ;; ~~~~~~ MISC ~~~~~~
+  ;; org-indent, set to just hide the indent
+  `(org-indent :inherit (org-hide fixed-pitch))
+
+  ;; special keywords
+  `(org-special-keyword :inherit (font-lock-comment-face fixed-pitch))
+
+  ;; the org-block thing, its all block segments
+  `(org-block :inherit fixed-pitch)
+
+  ;; quotes
+  `(org-quote :inherit variable-pitch)
+  )
+#+end_src
+
+*** Other visual changes
+The following few codeblocks just make general org mode look a little bit better.
+
+Hide emphasis markup:
+#+begin_src emacs-lisp
+(setq org-hide-emphasis-markers t)
+#+end_src
+
+Add some fancy symbols replacing some text:
+#+begin_src emacs-lisp
+(defun my/pretty-symbols ()
+  (interactive)
+  (setq prettify-symbols-alist
+        '(("#+begin_src" . ?)
+          ("#+BEGIN_SRC" . ?)
+          ("#+end_src" . ?)
+          ("#+END_SRC" . ?)
+          ("#+header" . ?)
+          ("#+HEADER" . ?)
+          (":PROPERTIES:" . ?)
+          (":properties:" . ?)
+          (":LOGBOOK:" . ?)
+          (":logbook:" . ?)
+          ("[ ]" . ?)
+          ("[-]" . ?)
+          ("[X]" . ?)
+          ("#+BEGIN_QUOTE" . ?)
+          ("#+begin_quote" . ?)
+          ("#+END_QUOTE" . ?)
+          ("#+end_quote" . ?)
+          ))
+  (prettify-symbols-mode 1))
+(add-hook 'org-mode-hook 'my/pretty-symbols)
+#+end_src
+
+Swap the ellipsis out with a downwards triangle/arrow thing:
+#+begin_src emacs-lisp
+(after! org
+  (setq org-ellipsis "  "))
+#+end_src
+
+Fix issue with the above swap out where icons would break:
+#+begin_src emacs-lisp
+(setq org-cycle-separator-lines -1)
+#+end_src
+
+Use org-superstar-mode to replace plain lists with actual unicode bullets:
+#+begin_src emacs-lisp
+(setq org-superstar-item-bullet-alist
+      '((?* . ?•)
+        (?+ . ?‣)
+        (?- . ?‣)))
+#+end_src
+
+Set org priority colors and icons:
+#+begin_src emacs-lisp
+(use-package org-fancy-priorities
+  :diminish
+  :demand t
+  :defines org-fancy-priorities-list
+  :hook (org-mode . org-fancy-priorities-mode))
+
+(setq org-fancy-priorities-list '((?A . "[]")
+                                  (?B . "[]")
+                                  (?C . "[]")))
+
+(setq org-priority-faces '((?A :foreground "red3")
+                           (?B :foreground "goldenrod2")
+                           (?C :foreground "green4")))
+#+end_src
+
+** Templates
+I use org capture templates purely with an inbox file. I keep an inbox file per system, to avoid sync issues, and then when I get a chance I refile them. The heading of the inbox file has the ~REFILE~ tag, which appear in one of my custom agenda views, so I can see everything that needs to be refiled. When I get a chance, I organize them into places they should be. These are normally quick things that need to be jotted down fast.
+#+begin_src emacs-lisp
+(after! org
+  (setq org-capture-templates
+        ;; basic todo entry
+        '(("t" "todo" entry
+           (file vulpea-capture-inbox-file)
+           "* TODO %?\n%U\n"
+           :kill-buffer t)
+
+          ;; basic note entry
+          ("n" "note" entry
+           (file vulpea-capture-inbox-file)
+           "* %?  :note:\n%U\n"
+           :kill-buffer t)
+
+          ;; basic thought entry
+          ("h" "thought" entry
+           (file vulpea-capture-inbox-file)
+           "* %?  :thought:\n%U\n"
+           :kill-buffer t)
+
+          ;; hw assignment entry for quick logging of hw assignments when needed (can always refile later)
+          ("a" "assignment" entry
+           (file vulpea-capture-inbox-file)
+           "* ASGN %?\n%U\n"
+           :kill-buffer t)
+
+          ;; basic meeting note entry
+          ("m" "meeting note" entry
+           (file vulpea-capture-inbox-file)
+           "* %?  :meeting:\n%U\n"
+           :kill-buffer t))))
+#+end_src
+
+For almost everything else, I used some org roam templates for creating new notes in org roam. There are a couple overlaps, used when I already know where I will be categorizing something.
+
+#+begin_src emacs-lisp
+(setq org-roam-capture-templates
+      ;; the default template for a note
+      '(("d" "default" plain
+         "%?"
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+author: Clay Kaufmann\n#+filetags:")
+         :unnarrowed t)
+
+        ("t" "thought" plain "* Thought\n\n* Links\n\n* References\n"
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: thought")
+         :unnarrowed t)
+
+        ;; the project template, used for projects WITH A DEADLINE
+        ("p" "project" plain "* Overview\n\n* Tasks\n** TODO Set project name and deadline\n\n* Ideas\n\n* Notes\n\n* Meetings\n\n* Resources\n\n* PROJ ${title}"
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: project")
+         :unnarrowed t)
+
+        ;; the metaproject template, used for projects without a deadline
+        ("P" "meta project" plain "* Overview\n\n* Tasks\n** TODO Add project name and set a work schedule\n\n* Thoughts\n\n* Notes\n\n* Meetings\n\n* Resources\n\n* PROJ ${title}"
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: metaproject")
+         :unnarrowed t)
+
+        ;; class template, used as the homepage for a class
+        ("C" "class" plain "* Class Overview\n\n\n* Homework\n\n\n* Notes\n\n\n* Ideas\n"
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: class:classname")
+         :unnarrowed t)
+
+        ;; lecture note template, used for a lecture note for a class
+        ("c" "lecturenote" plain "* Overview\n\n\n* Notes\n\n\n* References"
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: classnote:classname:class")
+         :unnarrowed t)
+
+        ;; a default note template
+        ("n" "note" plain "* Overview\n\n* References"
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: note")
+         :unnarrowed t)
+
+        ;; data structure and algo templates, two things I have been heavily taking notes on lately
+        ("d" "data structure" plain "* %?\n\n* References"
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: software:datastructure")
+         :unnarrowed t)
+        ("A" "algorithm" plain "* %?\n\n* References"
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: software:algorithm")
+         :unnarrowed t)
+
+        ;; a meeting note, used for a meeting (also a normal org capture note used when I do not know where this will go)
+        ("m" "meeting" plain "* %?\n\n* Context"
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: meeting")
+         :unnarrowed t)
+
+        ;; MOC, or Map of Content, used to find smaller subcategories within the MOC
+        ("M" "MOC" plain "* %?\n\n"
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: MOC")
+         :unnarrowed t)
+
+        ;; a cooking recipe note, used for storing all of my cooking recipes
+        ("R" "cooking recipe" plain "* Overview\n\n\n* Ingredients\n\n* Recipe\n\n* Cooking Log\n** Date\n** Time Taken\n** Thoughts\n* Links\n- [[id:b10487ad-2402-418f-85af-3f1513b1b631][Cooking Recipes]] "
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: recipe")
+         :unnarrowed t)
+
+        ("r" "resource" plain "* Overview\n\n\n* References\n"
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: resource")
+         :unnarrowed t)
+
+        ("W" "weekly goal setting" plain "* Goals\n\n* Action Items\n"
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: weeklygoals")
+         :unnarrowed t)
+
+        ("f" "person" plain "* General\nName:\nFrom:\nBirthday:\nCurrent Address:\n\n\n* Relatives\n\n\n* Thoughts\n"
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: people")
+         :unnarrowed t)
+
+        ("w" "writing" plain "* ${title}\n\n\n* References\n"
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: writing:thought")
+         :unnarrowed t)
+
+        ("L" "latex" plain "* ${title}\n\n\n* References\n\\printbibliography[heading=none]"
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: ")
+         :unnarrowed t)
+
+        ;; an assignment note, used for tracking progress on an assignment
+        ("a" "assignment" plain "* Overview\n\n* Tasks\n\n\n* Notes\n\n* Ideas\n\n* Resources\n"
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: assignment:class")
+         :unnarrowed t)))
+#+end_src
+
+Finally we have the org roam dailies capture templates. There is only one for each day, where I try to keep a journal when I can.
+#+begin_src emacs-lisp
+(setq org-roam-dailies-capture-templates
+      '(("d" "default" entry
+         "* Tasks\n\n\n* Exercise\n** Running\n\n** Cycling\n\n** Other\n\n\n* Ideas\n\n\n* Thoughts\n\n\n* Daily Journal\n\n\n* [[id:84572ce2-320f-439a-badf-ad24577b493e][Daily Note]] for %<%Y-%m-%d>"
+         :target (file+head "%<%Y-%m-%d>.org"
+                            "#+title: %<%Y-%m-%d>\n"))))
+#+end_src
+
+** Org Agenda
+Moving on to org agenda. This is one of my favorite parts of org mode. So far I only have 2 custom views, one for showing refiles, and the other for showing an in-depth daily view.
+
+*** General Settings
+Set the agenda file directories. Use the main Org folder, the daily notes folder, as well as this config file so I can see todo's on my config. Eventually, this should be modified to only look at files with certain tags, as suggested by Boris Buliga [[https://d12frosted.io/posts/2021-01-16-task-management-with-roam-vol5.html][here]].
+#+begin_src emacs-lisp
+;; (setq org-agenda-files (list "~/Dropbox/Terrapin/daily/"
+;;                              "~/Dropbox/Terrapin/"
+;;                              "~/.doom.d/config.org"))
+#+end_src
+
+Dropbox updated December 2022, the folder moved to the below location, however dropbox was symlinked, this is here in case I need to change things.
+#+begin_src emacs-lisp
+(setq org-agenda-files (list "~/Library/CloudStorage/Dropbox/Sceptile/daily/"
+                             "~/Library/CloudStorage/Dropbox/Sceptile/"
+                             "~/.doom.d/config.org"))
+#+end_src
+
+Disable the diary by default in agenda views, as it adds clutter to the default weekly agenda. In the weekly agenda I simply want to see when tasks are due, I do not want to see when my classes are.
+#+begin_src emacs-lisp
+(setq org-agenda-include-diary t)
+#+end_src
+
+Start in log mode, include deadlines
+#+begin_src emacs-lisp
+(setq org-agenda-start-with-log-mode t)
+(setq org-agenda-include-deadlines t)
+(setq org-deadline-warning-days 7)
+#+end_src
+
+Hide completed tasks from agenda:
+#+begin_src emacs-lisp
+(setq org-agenda-skip-scheduled-if-done t)
+(setq org-agenda-skip-deadline-if-done t)
+#+end_src
+
+Set the org agenda prefix format. This removes roam date titles from the agenda view mainly. (again, from [[https://d12frosted.io/posts/2020-06-24-task-management-with-roam-vol2.html][Boris Buliga]] in his Task Management with Org Roam series)
+For todo's, I used [[https://stackoverflow.com/questions/58820073/s-in-org-agenda-prefix-format-doesnt-display-dates-in-the-todo-view][this stack overflow post]] to add the deadline to the todo tag. Being able to view the deadline in task view was extremely important to me, and this accomplishes that.
+#+begin_src emacs-lisp
+(setq org-agenda-prefix-format
+      '((agenda . " %i %(vulpea-agenda-category 18)%?-14t% s")
+        (todo . " %i %(vulpea-agenda-category 18) %-11(let ((deadline (org-get-deadline-time (point)))) (if deadline (format-time-string \"%Y-%m-%d\" deadline) \"\")) ")
+        (tags . " %i %(vulpea-agenda-category 18) %t ")
+        (search . " %i %(vaulpea-agenda-category 18) %t ")))
+#+end_src
+
+*** Agenda Diary
+We want to call the ~mac_diary.py~ file when agenda is opened for an up to date calendar.
+This cannot function until we somehow get Emacs access to the apple calendar. (UPDATE: Got that fixed, but icalbuddy still doesn't work)
+#+begin_src emacs-lisp
+(defun clay/update-diary ()
+  "runs a python script to update org agenda"
+  (shell-command
+   "python ~/Dropbox/Org-Utils/mac_diary_active.py"))
+
+;; (add-hook 'org-agenda-mode-hook 'clay/update-diary)
+;; (clay/update-diary)
+#+end_src
+
+*** Agenda Styling
+Add an extra line after each day for better spacing in the default agenda.
+#+begin_src emacs-lisp
+(setq org-agenda-format-date
+          (lambda (date)
+            (concat "\n" (org-agenda-format-date-aligned date))))
+#+end_src
+
+We now set a bunch of custom faces for different org agenda variables, to make the custom org agenda look much better.
+#+begin_src emacs-lisp
+(custom-set-faces!
+  ;; set the agenda structure font (heading) mainly used to change the color of super agenda group names
+  `(org-agenda-structure :slant italic :foreground ,(doom-color 'teal) :width semi-expanded :height 1.3)
+
+  ;; set the shceduled today font (for some reason it defaults to being dimmed, which was not nice)
+  `(org-scheduled-today :foreground ,(doom-color 'violet))
+
+  ;; by default this is white, add some color to make it pop on the time grid
+  `(org-agenda-diary :foreground ,(doom-color 'blue))
+
+  ;; set dimmed todo to be normal color
+  ;; todo keyword ends up being black, that is ok
+  `(org-agenda-dimmed-todo-face :foreground ,(doom-color 'fg))
+
+  ;; change the today font
+  `(org-agenda-date-today :foreground ,(doom-color 'purple) :height 1.5)
+)
+#+end_src
+
+Set org distant deadline font settings to reduce graying:
+#+begin_src emacs-lisp
+(setq org-agenda-deadline-faces
+      '((1.001 . error)
+        (1.0 . org-warning)
+        (0.1 . org-upcoming-deadline)
+        (0.1 . org-upcoming-distant-deadline)))
+#+end_src
+
+*** Super Agenda
+Super agenda is used to augment org agenda and categorize things better.
+
+Enable super agenda mode:
+#+begin_src emacs-lisp
+(org-super-agenda-mode)
+#+end_src
+
+Set agenda to start today:
+#+begin_src emacs-lisp
+(use-package! org-super-agenda
+    :config
+    (setq org-agenda-start-day nil  ; today
+    ))
+#+end_src
+
+*** Agenda Views
+The idea here is to put all agenda views inside the custom commands, and for ones that require super agenda, add super agenda groups to it.
+
+The views I want to create right now are as follows:
+1. Daily
+   Inside the daily view, will be all tasks due the next day, what I should refile, and organized items by project, assignment, etc.
+2. Weekly
+   The weekly view will have all tasks due in the next week, etc.
+3. Refile
+   The refile view shows all things that are marked with the refile tag. Typically this is just anything in the inbox file.
+
+**** Modifying basic agenda views
+#+begin_src emacs-lisp
+(setq org-agenda-use-time-grid t)
+
+;; set the span of the default agenda to be a week
+(setq org-agenda-span 10)
+#+end_src
+
+**** Custom Command Agenda Views
+Add custom views:
+#+begin_src emacs-lisp :results none
+(setq org-agenda-custom-commands
+
+      ;; a refiling view
+      '(("r" "Things to refile"
+         ((tags
+           "REFILE"
+           ((org-agenda-overriding-header "To refile:")
+            (org-tags-match-list-sublevels nil)))))
+
+        ;; the day view (used most often)
+        ("d" "Day View"
+
+         ;; show the base agenda
+         ((agenda "" ((org-agenda-span 'day)
+                      ;; enable the diary in the daily view so I can see how classes fit into the day
+                      (org-agenda-include-diary t)
+                      (org-agenda-overriding-header "")
+
+                      ;; add 7 days of warning to get things due this week
+                      (org-deadline-warning-days 7)
+                      ;; set super agenda groups
+                      (org-super-agenda-groups
+                        ;; main group of today to show the time grid
+                       '((:name " Today"
+                          :time-grid t
+                          :date today
+                          :order 1
+                          )
+
+                         ;; second group to show all tasks due this week (using deadline-warning-days)
+                         (:name " Due this week"
+                          :todo t
+                          :order 4)))))
+
+          ;; show a bunch of different todo groups
+          (alltodo "" ((org-agenda-overriding-header "")
+                       (org-super-agenda-groups
+                        ;; next up are all todos marked NEXT
+                        '((:name "Next up"
+                           :todo "NEXT"
+                           :discard (:todo "PROJ")
+                           :discard (:tag "REFILE")
+                           :order 1)
+
+                          ;; all taks with a priority of A
+                          (:name " Important"
+                           :priority "A"
+                           :order 3)
+
+                          ;; tasks that are estimated to be less than 30 minutes
+                          (:name "Quick Picks"
+                           :effort< "0:30"
+                           :order 5)
+
+                          ;; overdue tasks
+                          (:name " Overdue"
+                           :deadline past
+                           :order 4)
+
+                          ;; assignments for school
+                          (:name " Assignments"
+                           :tag "assignment"
+                           :todo "ASGN"
+                           :order 6)
+
+                          ;; general UVM tasks
+                          (:name " UVM"
+                           :tag "class"
+                           :discard (:todo "PROJ")
+                           :order 6)
+
+                          ;; tasks with no due date
+                          (:name " No due date"
+                           :deadline nil
+                           :order 70
+                           )
+
+                          ;; emacs related tasks (before projects to separate them)
+                          (:name " Emacs"
+                           :tag "emacs"
+                           :order 9)
+
+                          ;; all projects, hide the PROJ tag to avoid duplication (the tag will appear if the due date is coming up in the top week section)
+                          (:name " Projects"
+                           :discard (:todo "PROJ")
+                           :tag ("project" "metaproject")
+                           :order 7)
+
+                          (:name "Others"
+                           :deadline t
+                           :order 10)
+
+                          ;; discard all things with the REFILE tag, as they will appear in the next group
+                          (:discard (:tag "REFILE")
+                           :order 80)
+                          ))))
+
+          ;; refile section, to show anything that should be refiled
+          (tags "REFILE" ((org-agenda-overriding-header "To Refile:")))))))
+#+end_src
+
+** Vulpea Functions
+Once again, these were taken from [[https://d12frosted.io/posts/2020-06-24-task-management-with-roam-vol2.html][Boris Buliga]]. They are mainly used to remove the org-roam prefixes on filenames in org agenda.
+#+begin_src emacs-lisp
+(defun vulpea-buffer-prop-get (name)
+  "Get a buffer property called NAME as a string."
+  (org-with-point-at 1
+    (when (re-search-forward (concat "^#\\+" name ": \\(.*\\)")
+                             (point-max) t)
+      (buffer-substring-no-properties
+       (match-beginning 1)
+       (match-end 1)))))
+
+(defun vulpea-agenda-category (&optional len)
+  "Get category of item at point for agenda.
+
+Category is defined by one of the following items:
+
+- CATEGORY property
+- TITLE keyword
+- TITLE property
+- filename without directory and extension
+
+When LEN is a number, resulting string is padded right with
+spaces and then truncated with ... on the right if result is
+longer than LEN.
+
+Usage example:
+
+  (setq org-agenda-prefix-format
+        '((agenda . \" %(vulpea-agenda-category) %?-12t %12s\")))
+
+Refer to `org-agenda-prefix-format' for more information."
+  (let* ((file-name (when buffer-file-name
+                      (file-name-sans-extension
+                       (file-name-nondirectory buffer-file-name))))
+         (title (vulpea-buffer-prop-get "title"))
+         (category (org-get-category))
+         (result
+          (or (if (and
+                   title
+                   (string-equal category file-name))
+                  title
+                category)
+              "")))
+    (if (numberp len)
+        (s-truncate len (s-pad-right len " " result))
+      result)))
+#+end_src
+
+** Extra Org Keybindings
+Add some keybindings to activate org roam ui.
+#+begin_src emacs-lisp
+(map! :leader
+      (:prefix ("n")
+       (:prefix ("r")
+        :desc "open org roam ui" "o" #'org-roam-ui-open
+        :desc "toggle org roam ui" "u" #'org-roam-ui-mode)))
+#+end_src
+
+
+* Package Configuration
+** Projectile
+Set projectile search path and auto discover:
+#+begin_src emacs-lisp
+(setq projectile-project-search-path '("~/Projects/"))
+(setq projectile-auto-discover t)
+#+end_src
+
+** Magit
+Enable ~magit-todos-mode~ to always have project todos:
+#+begin_src emacs-lisp
+(setq magit-todos-mode t)
+#+end_src
+
+*** Magit-delta
+I use [[https://github.com/dandavison/delta][delta]] for git diffs, with a special customization. This enables it in magit automatically.
+#+begin_src emacs-lisp
+(add-hook 'magit-mode-hook (lambda () (magit-delta-mode +1)))
+
+#+end_src
+
+By default, magit-delta diffs highlight does not go across the entire window, this fixes that.
+NOTE: Highlight colors must be manually set now, equivalent to the theme as defined in my gitconfig for delta colors.
+Reference [[https://github.com/dandavison/magit-delta/issues/6][available here]]
+#+begin_src emacs-lisp
+(with-eval-after-load 'magit-delta
+    (set-face-attribute 'magit-diff-added-highlight nil
+              :background "#003800")
+    (set-face-attribute 'magit-diff-added nil
+              :background "#003800")
+    (set-face-attribute 'magit-diff-removed-highlight nil
+              :background "#3f0001")
+    (set-face-attribute 'magit-diff-removed nil
+              :background "#3f0001"))
+
+(add-hook 'magit-delta-mode-hook
+            (lambda ()
+              (setq face-remapping-alist
+                    (seq-difference face-remapping-alist
+                                    '((magit-diff-removed . default)
+                                      (magit-diff-removed-highlight . default)
+                                      (magit-diff-added . default)
+                                      (magit-diff-added-highlight . default))))))
+#+end_src
+
+** Org Roam-UI
+This is the suggested org roam config, from [[https://github.com/org-roam/org-roam-ui][the github repo]].
+#+begin_src emacs-lisp
+(use-package! websocket
+  :after org-roam)
+
+(use-package! org-roam-ui
+  :after org-roam ;; or :after org
+  ;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+  ;;         a hookable mode anymore, you're advised to pick something yourself
+  ;;         if you don't care about startup time, use
+  ;;  :hook (after-init . org-roam-ui-mode)
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start t))
+#+end_src
+
+** Treemacs
+To be honest, I do not use Treemacs much, I prefer to use dired and direct file searching with projectile, however sometimes it is nice to have a visual representation of a projects file structure. As such, treemacs is here.
+
+Give treemacs fancy icons:
+#+begin_src emacs-lisp
+(with-eval-after-load 'doom-themes
+  (doom-themes-treemacs-config))
+(setq doom-themes-treemacs-theme "doom-colors")
+#+end_src
+
+Set the treemacs width:
+#+begin_src emacs-lisp
+(setq treemacs-width 30)
+#+end_src
+
+Make treemacs open on the left side:
+This is the default and is not needed, but sometimes I like it on the right so I am keeping the codeblock here.
+#+begin_src emacs-lisp
+(setq treemacs-position 'left)
+#+end_src
+
+** VTerm
+The default typing speed in vterm is horrendously slow, the following setting speeds it up.
+#+begin_src emacs-lisp
+(setq vterm-timer-delay 0.0001)
+#+end_src
+
+** Tree Sitter
+#+begin_src emacs-lisp
+(require 'tree-sitter)
+
+;; config snagged from hlissners private doom cfg
+(use-package! tree-sitter
+  :when (bound-and-true-p module-file-suffix)
+  :hook (prog-mode . tree-sitter-mode)
+  :hook (tree-sitter-after-on . tree-sitter-hl-mode)
+  :config
+  (require 'tree-sitter-langs)
+  (defadvice! doom-tree-sitter-fail-gracefully-a (orig-fn &rest args)
+    "Don't break with errors when current major mode lacks tree-sitter support."
+    :around #'tree-sitter-mode
+    (condition-case e
+        (apply orig-fn args)
+      (error
+       (unless (string-match-p (concat "^Cannot find shared library\\|"
+                                       "^No language registered\\|"
+                                       "cannot open shared object file")
+                            (error-message-string e))
+            (signal (car e) (cadr e)))))))
+
+;; add a keybinding to toggle highlight mode
+
+#+end_src
+
+Add some custom tree sitter fonts
+#+begin_src emacs-lisp
+(custom-set-faces!
+  '(tree-sitter-hl-face:property :inherit tree-sitter-hl-face:type.super)
+  '(tree-sitter-hl-face:function.call :inherit (link font-lock-function-name-face) :weight normal :underline nil))
+  ;; '(tree-sitter-hl-face:variable.parameter :foreground "#dda0dd"))
+#+end_src
+
+#+RESULTS:
+| doom--customize-themes-h-104 | doom--customize-themes-h-105 | doom--customize-themes-h-106 | doom--customize-themes-h-107 | doom--customize-themes-h-108 |
+
+** Zen Mode
+Keep the modeline in zen mode, needed for pomodoro timer and org clock
+#+begin_src emacs-lisp
+(setq writeroom-mode-line t)
+#+end_src
+
+Reduce text-scaling in zen mode:
+#+begin_src emacs-lisp
+(setq +zen-text-scale 0.8)
+#+end_src
+
+** Git Gutter
+Disable git-gutter in org mode:
+#+begin_src emacs-lisp
+(after! git-gutter
+  (setq git-gutter:disabled-modes '(org-mode)))
+#+end_src
+
+** All the icons nerd fonts
+This is to fix collisions between nerd fonts and all the icons
+#+begin_src emacs-lisp
+(after! all-the-icons-nerd-fonts
+  :after all-the-icons
+  :demand t
+  :config
+  (all-the-icons-nerd-fonts-prefer)
+  )
+#+end_src
+
+** Citations Config
+For citations, I use [[https://www.zotero.org/][Zotero]] with the better bibtex extension. This allows me to save all citations into Zotero, and upon my library changing, better bibtex will automatically export it to a =.bib= file, which is the path I set for my bibliography. From there, I can insert citations with =org-cite=. If I need to make references modifications in Emacs, I can do so with =citar=. Upon any org-latex export, the citations will be put in accordingly.
+
+Set the citar bibliography loc:
+#+begin_src emacs-lisp
+(setq! citar-bibliography '("~/Dropbox/Sceptile/references/references.bib"))
+#+end_src
+
+Set the citar notes path:
+#+begin_src emacs-lisp
+(setq! citar-notes-paths '("~/Dropbox/Sceptile/"))
+#+end_src
+
+Set the org-cite bibliography file:
+#+begin_src emacs-lisp
+(setq org-cite-global-bibliography '("~/Dropbox/Sceptile/references/references.bib"))
+#+end_src
