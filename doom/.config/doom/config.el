@@ -43,11 +43,11 @@
 ;; FiraCode Nerd Font Mono
 
 ;; jetbrains mono has been wonky on my mac
-(defvar clay-fixed-pitch-face "FiraCode Nerd Font Mono")
+(defvar clay-fixed-pitch-face "JetBrainsMono Nerd Font Mono")
 (defvar clay-var-pitch-face "ETBookOT")
 
 ;; set the fallback unicode font to fira code
-(setq doom-unicode-font (font-spec :family "FiraCode Nerd Font Mono"))
+(setq doom-unicode-font (font-spec :family "JetBrainsMono Nerd Font Mono"))
 
 (cl-case system-type
   ((gnu/linux) ; for linux
@@ -57,8 +57,8 @@
          doom-serif-font (font-spec :family clay-var-pitch-face :size 20 :height 180)))
 
   ((darwin) ; for mac
-   (setq doom-font (font-spec :family clay-fixed-pitch-face :size 15)
-         doom-big-font (font-spec :family clay-fixed-pitch-face :size 24)
+   (setq doom-font (font-spec :family clay-fixed-pitch-face :size 14)
+         doom-big-font (font-spec :family clay-fixed-pitch-face :size 20)
          doom-variable-pitch-font (font-spec :family clay-var-pitch-face :size 18 :height 180)
          doom-serif-font (font-spec :family clay-var-pitch-face :size 18 :height 180)
          )))
@@ -106,7 +106,7 @@
 
 (setq doom-modeline-env-python-executable "python-shell-interpreter") ; or `python-shell-interpreter'
 
-(setq doom-theme 'doom-material-dark)
+(setq doom-theme 'doom-dracula)
 
 (doom-themes-org-config)
 
