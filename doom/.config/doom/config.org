@@ -89,7 +89,7 @@ Set all fonts:
 
   ((darwin) ; for mac
    (setq doom-font (font-spec :family clay-fixed-pitch-face :size 14)
-         doom-big-font (font-spec :family clay-fixed-pitch-face :size 20)
+         doom-big-font (font-spec :family clay-fixed-pitch-face :size 17)
          doom-variable-pitch-font (font-spec :family clay-var-pitch-face :size 18 :height 180)
          doom-serif-font (font-spec :family clay-var-pitch-face :size 18 :height 180)
          )))
