@@ -71,3 +71,5 @@
 [merge]
   tool = meld
 
+[push]
+	autoSetupRemote = true
