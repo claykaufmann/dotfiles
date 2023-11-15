@@ -102,7 +102,9 @@
 
 (setq doom-modeline-project-detection 'auto)
 
-(setq doom-modeline-buffer-file-name-style 'file-name)
+;; uncomment the following line if paths are too long in the modeline
+;; (setq doom-modeline-buffer-file-name-style 'file-name)
+(setq doom-modeline-buffer-file-name-style 'relative-to-project)
 
 (setq doom-modeline-env-python-executable "python-shell-interpreter") ; or `python-shell-interpreter'
 
@@ -256,6 +258,8 @@
 (setq-hook! 'js2-mode-hook +format-with-lsp nil)
 (setq-hook! 'js-mode-hook +format-with-lsp nil)
 (setq-hook! 'web-mode-hook +format-with-lsp nil)
+
+(setq python-mode-hook '(rainbow-delimiters-mode))
 
 (map! :leader
       (:prefix-map ("P" . "python")

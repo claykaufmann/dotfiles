@@ -144,7 +144,9 @@ This adds icons to the modeline, increases the max length of the git branch, and
 
 (setq doom-modeline-project-detection 'auto)
 
-(setq doom-modeline-buffer-file-name-style 'file-name)
+;; uncomment the following line if paths are too long in the modeline
+;; (setq doom-modeline-buffer-file-name-style 'file-name)
+(setq doom-modeline-buffer-file-name-style 'relative-to-project)
 
 (setq doom-modeline-env-python-executable "python-shell-interpreter") ; or `python-shell-interpreter'
 #+end_src
@@ -354,6 +356,12 @@ Disable LSP format in JS so prettier is used instead:
 #+end_src
 
 *** Python
+**** Misc
+Force rainbow delimiters in python:
+#+begin_src emacs-lisp
+(setq python-mode-hook '(rainbow-delimiters-mode))
+#+end_src
+
 **** Keybindings
 As I code in python a fair bit, having access to these tools without using ~M-x~ is quite useful.
 
