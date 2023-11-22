@@ -1,3 +1,3 @@
 require("core.remap")
 require("core.packer")
-print("hello from core")
+require("core.set")
