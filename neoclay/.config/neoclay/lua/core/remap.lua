@@ -54,3 +54,6 @@ vim.keymap.set("n", "<leader>wj", "<C-W>j")
 vim.keymap.set("n", "<leader>wk", "<C-W>k")
 vim.keymap.set("n", "<leader>wl", "<C-W>l")
 
+-- hop to previous buffer
+vim.keymap.set("n", "<leader>`", ":b#<CR>")
+

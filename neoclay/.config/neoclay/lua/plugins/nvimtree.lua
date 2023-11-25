@@ -5,4 +5,5 @@
 -- empty setup using defaults
 require("nvim-tree").setup()
 
--- vim.keymap.set("n", "<leader>op", 
+-- map tree toggle
+vim.keymap.set("n", "<leader>op", ":NvimTreeToggle<CR>")
