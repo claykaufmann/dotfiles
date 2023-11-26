@@ -13,6 +13,7 @@ local colors = {
   grey   = '#303030',
 }
 
+-- currently unused, overruled by tokyonight
 local bubbles_theme = {
   normal = {
     a = { fg = colors.black, bg = colors.violet },
@@ -33,7 +34,7 @@ local bubbles_theme = {
 
 require('lualine').setup {
   options = {
-    theme = bubbles_theme,
+    theme = 'tokyonight', -- set to bubbles_theme to use bubbles thing
     component_separators = '|',
     section_separators = { left = '', right = '' },
   },
