@@ -44,7 +44,25 @@ require('lualine').setup {
     },
     lualine_b = { 'filename', 'branch' },
     lualine_c = { 'fileformat' },
-    lualine_x = {},
+    lualine_x = {
+        {
+            'diagnostics',
+
+            -- Table of diagnostic sources, available sources are:
+            --   'nvim_lsp', 'nvim_diagnostic', 'nvim_workspace_diagnostic', 'coc', 'ale', 'vim_lsp'.
+            -- or a function that returns a table as such:
+            --   { error=error_cnt, warn=warn_cnt, info=info_cnt, hint=hint_cnt }
+            sources = { 'nvim_lsp' },
+
+            -- Displays diagnostics for the defined severity types
+            sections = { 'error', 'warn', 'info', 'hint' },
+
+            symbols = {error = 'E', warn = 'W', info = 'I', hint = 'H'},
+            colored = true,           -- Displays diagnostics status in color if set to true.
+            update_in_insert = false, -- Update diagnostics in insert mode.
+            always_visible = false,   -- Show diagnostics even if there are none.
+        }
+    },
     lualine_y = { 'filetype', 'progress' },
     lualine_z = {
       { 'location', separator = { right = '' }, left_padding = 2 },
