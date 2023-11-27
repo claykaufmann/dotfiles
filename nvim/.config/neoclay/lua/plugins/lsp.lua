@@ -1,7 +1,11 @@
 local lsp_zero = require('lsp-zero')
 
 lsp_zero.on_attach(function(client, bufnr)
-  local opts = {buffer = bufnr, remap = false}
+  local opts = { buffer = bufnr, remap = false }
+
+  vim.keymap.set({ 'n', 'x' }, '<leader>cf', function()
+    vim.lsp.buf.format({ async = false, timeout_ms = 10000 })
+  end, opts)
 
   vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
   vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
@@ -17,8 +21,8 @@ end)
 
 require('mason').setup({})
 require('mason-lspconfig').setup({
-	ensure_installed = {'tsserver', 'rust_analyzer', 'ruff_lsp', 'clangd', 'lua_ls'},
-	handlers = {
+  ensure_installed = { 'tsserver', 'rust_analyzer', 'ruff_lsp', 'clangd', 'lua_ls' },
+  handlers = {
     lsp_zero.default_setup,
     lua_ls = function()
       local lua_opts = lsp_zero.nvim_lua_ls()
@@ -28,13 +32,13 @@ require('mason-lspconfig').setup({
 })
 
 local cmp = require('cmp')
-local cmp_select = {behavior = cmp.SelectBehavior.Select}
+local cmp_select = { behavior = cmp.SelectBehavior.Select }
 
 cmp.setup({
   sources = {
-    {name = 'path'},
-    {name = 'nvim_lsp'},
-    {name = 'nvim_lua'},
+    { name = 'path' },
+    { name = 'nvim_lsp' },
+    { name = 'nvim_lua' },
   },
   formatting = lsp_zero.cmp_format(),
   mapping = cmp.mapping.preset.insert({
