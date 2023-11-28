@@ -34,7 +34,7 @@
 
 [core]
   pager = delta
-	excludesfile = /Users/ckaufmann/.gitignore
+	excludesfile = /Users/ckaufmann/.gitignore-global
   autocrlf = input
 
 [pager]
