@@ -36,13 +36,14 @@ echo "Installing core homebrew packages"
 brew tap homebrew/cask-fonts
 brew install --cask font-caskaydia-cove-nerd-font
 brew install --cask font-fira-code-nerd-font
-brew install --cask font-jetbrains-mono-nerd-fontbrew install eza 
+brew install --cask font-jetbrains-mono-nerd-fontbrew install eza
+
+# openssl installs prior
+brew install openssl@1.1
+brew install openssl@3
 
 # other essential packages I use
-brew install eza nvim pyenv pyenv-virtualenv neofetch git-delta git git-extras starship tmux atuin direnv # amethyst alacritty
-
-# install pdm
-curl -sSL https://pdm-project.org/install-pdm.py | python3 -
+brew install eza nvim pyenv pyenv-virtualenv neofetch git-delta git git-extras starship tmux atuin direnv htop bat pgcli rsync tldr wget ripgrep fzf fd postgresql@14 pdm # amethyst alacritty
 
 # source new zshrc, getting pyenv completions
 source "$HOME/.zshrc"
@@ -56,7 +57,7 @@ rm -rf ~/.zsh/zsh-syntax-highlighting
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
 
 # install essential python build packages before installing pyenv python versions
-brew install openssl readline sqlite3 xz zlib tcl-tk
+brew install readline sqlite3 xz zlib tcl-tk
 
 # setup pyenv
 pyenv install 3.10 3.11 3.12

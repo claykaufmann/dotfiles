@@ -593,12 +593,6 @@
            "* %?  :thought:\n%U\n"
            :kill-buffer t)
 
-          ;; hw assignment entry for quick logging of hw assignments when needed (can always refile later)
-          ("a" "assignment" entry
-           (file vulpea-capture-inbox-file)
-           "* ASGN %?\n%U\n"
-           :kill-buffer t)
-
           ;; basic meeting note entry
           ("m" "meeting note" entry
            (file vulpea-capture-inbox-file)
@@ -626,27 +620,13 @@
          :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: metaproject")
          :unnarrowed t)
 
-        ;; class template, used as the homepage for a class
-        ("C" "class" plain "* Class Overview\n\n\n* Homework\n\n\n* Notes\n\n\n* Ideas\n"
-         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: class:classname")
-         :unnarrowed t)
-
-        ;; lecture note template, used for a lecture note for a class
-        ("c" "lecturenote" plain "* Overview\n\n\n* Notes\n\n\n* References"
-         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: classnote:classname:class")
+        ("j" "jira" plain "* Overview\n\n* Tasks\n** TODO Add ticket name\n\n* Thoughts\n\n* Notes\n\n* Meetings\n\n* Resources\n\n* PROJ ${title}"
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: project:jira")
          :unnarrowed t)
 
         ;; a default note template
         ("n" "note" plain "* Overview\n\n* References"
          :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: note")
-         :unnarrowed t)
-
-        ;; data structure and algo templates, two things I have been heavily taking notes on lately
-        ("d" "data structure" plain "* %?\n\n* References"
-         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: software:datastructure")
-         :unnarrowed t)
-        ("A" "algorithm" plain "* %?\n\n* References"
-         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: software:algorithm")
          :unnarrowed t)
 
         ;; a meeting note, used for a meeting (also a normal org capture note used when I do not know where this will go)
@@ -682,16 +662,11 @@
 
         ("L" "latex" plain "* ${title}\n\n\n* References\n\\printbibliography[heading=none]"
          :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: ")
-         :unnarrowed t)
-
-        ;; an assignment note, used for tracking progress on an assignment
-        ("a" "assignment" plain "* Overview\n\n* Tasks\n\n\n* Notes\n\n* Ideas\n\n* Resources\n"
-         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: assignment:class")
          :unnarrowed t)))
 
 (setq org-roam-dailies-capture-templates
       '(("d" "default" entry
-         "* Tasks\n\n\n* Exercise\n** Running\n\n** Cycling\n\n** Other\n\n\n* Ideas\n\n\n* Thoughts\n\n\n* Daily Journal\n\n\n* [[id:84572ce2-320f-439a-badf-ad24577b493e][Daily Note]] for %<%Y-%m-%d>"
+         "* Tasks\n\n\n* Goals\n\n\n* Itinerary\n\n\n* Ideas\n\n\n* Thoughts\n\n\n* Daily Journal\n\n\n* [[id:84572ce2-320f-439a-badf-ad24577b493e][Daily Note]] for %<%Y-%m-%d>"
          :target (file+head "%<%Y-%m-%d>.org"
                             "#+title: %<%Y-%m-%d>\n"))))
 
@@ -917,7 +892,7 @@ Refer to `org-agenda-prefix-format' for more information."
         :desc "open org roam ui" "o" #'org-roam-ui-open
         :desc "toggle org roam ui" "u" #'org-roam-ui-mode)))
 
-(setq projectile-project-search-path '("~/Projects/"))
+(setq projectile-project-search-path '("~/projects/" "~/projects/can/" "~/projects/data/" "~/projects/GSE/"))
 (setq projectile-auto-discover t)
 
 (setq magit-todos-mode t)
