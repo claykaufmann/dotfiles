@@ -13,8 +13,8 @@ export VISUAL=/opt/homebrew/bin/nvim
 
 # ~~~~~~~ ALIASES ~~~~~~~
 # use exa instead of default ls
-alias ls='exa'
-alias ll='exa -l -a --icons'
+alias ls='eza'
+alias ll='eza -l -a --icons'
 alias l.='ll -d .* '
 
 # g for git for quicker git commands
@@ -35,15 +35,42 @@ alias emacs-test='emacs --with-profile doom-test'
 # chezmoi alias
 alias che='chezmoi'
 
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+
+##### BETA ALIASES #####
+# handy function to set aws environment
+function set-aws-env() {
+  if [ $# -lt 1 ]
+  then
+    echo "Usage: $funcstack[1] <environment name>"
+    return
+  fi
+  
+  echo "Setting region to us-east-1"
+  export AWS_DEFAULT_REGION=us-east-1
+
+  if [ "$1" = "prod" ]; then
+    echo "Setting environment to production."
+    echo "User profile: prod_data"
+    export AWS_PROFILE=prod_data
+    export AWS_ENV=$1
+  elif [ "$1" = "staging" ]; then
+    echo "Setting environment to staging."
+    echo "User profile: staging_data"
+    export AWS_PROFILE=staging_data
+    export AWS_ENV=$1
+  else
+    echo "Setting environment to $1."
+    echo "User profile: dev_data"
+    export AWS_PROFILE=dev_data
+    export AWS_ENV=$1
+  fi
+}
+
 # ~~~~~~~ CONFIG SETUP ~~~~~~~
-# ~~~ pyenv
-# export PYENV_ROOT="$HOME/.pyenv"
-# export PATH="$PYENV_ROOT/bin:$PATH"
-
-# # activate pyenv/virtualenv
-# eval "$(pyenv init -)"
-# eval "$(pyenv virtualenv-init -)"
-
 # ~~~ nvm
 export NVM_DIR="$HOME/.nvm"
 
@@ -83,4 +110,9 @@ ZSH_HIGHLIGHT_STYLES[suffix-alias]='fg=#8fee96'
 ZSH_HIGHLIGHT_STYLES[precommand]='fg=#8fee96'
 ZSH_HIGHLIGHT_STYLES[arg0]='fg=#8fee96'
 
+# for direnv
+eval "$(direnv hook zsh)"
+
+# for pdm
+export PATH=/Users/ckaufmann/.local/bin:$PATH
 
