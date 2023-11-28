@@ -11,6 +11,12 @@ fi
 # brew install stow
 brew install stow
 
+# ensure in dotfiles dir (hardcoded here as I only use it anyway)
+dotfiles_dir="$HOME/dotfiles"
+
+# Change directory to dotfiles if not already
+cd "$dotfiles_dir" || exit 1
+
 # Loop through each folder, excluding .git, and run stow
 for folder in *; do
     if [ -d "$folder" ] && [ "$folder" != ".git" ]; then
@@ -34,6 +40,9 @@ brew install --cask font-jetbrains-mono-nerd-fontbrew install eza
 
 # other essential packages I use
 brew install eza nvim pyenv pyenv-virtualenv neofetch git-delta git git-extras starship tmux atuin direnv # amethyst alacritty
+
+# install pdm
+curl -sSL https://pdm-project.org/install-pdm.py | python3 -
 
 # source new zshrc, getting pyenv completions
 source "$HOME/.zshrc"
