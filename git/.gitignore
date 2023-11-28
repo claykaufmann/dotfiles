@@ -1,2 +1,6 @@
-.DS_Store
+.python-version
+.envrc
 .vscode
+.DS_Store
+asdf.py
+fdsa.py
