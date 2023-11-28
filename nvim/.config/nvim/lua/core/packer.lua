@@ -63,4 +63,6 @@ return require('packer').startup(function(use)
   use 'nvim-tree/nvim-tree.lua'
   use 'mhinz/vim-startify'
   use 'airblade/vim-gitgutter'
+
+  use 'folke/todo-comments.nvim'
   end)
