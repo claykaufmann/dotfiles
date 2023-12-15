@@ -7,18 +7,21 @@ return require('packer').startup(function(use)
   -- Packer can manage itself
   use 'wbthomason/packer.nvim'
 
-  use({ 'folke/tokyonight.nvim', as = 'tokyonight',
-  config = function()
-    vim.cmd('colorscheme tokyonight')
-  end})
+  use({
+    'folke/tokyonight.nvim',
+    as = 'tokyonight',
+    config = function()
+      vim.cmd('colorscheme tokyonight')
+    end
+  })
 
   use {
     'nvim-telescope/telescope.nvim', tag = '0.1.4',
     -- or                            , branch = '0.1.x',
-    requires = { {'nvim-lua/plenary.nvim'} }
+    requires = { { 'nvim-lua/plenary.nvim' } }
   }
 
-  use('nvim-treesitter/nvim-treesitter', {run = ':TSUpdate'})
+  use('nvim-treesitter/nvim-treesitter', { run = ':TSUpdate' })
   use('mbbill/undotree')
   use('tpope/vim-fugitive')
 
@@ -27,23 +30,23 @@ return require('packer').startup(function(use)
     branch = 'v3.x',
     requires = {
       -- auto install servers with mason
-      {'williamboman/mason.nvim'},
-      {'williamboman/mason-lspconfig.nvim'},
+      { 'williamboman/mason.nvim' },
+      { 'williamboman/mason-lspconfig.nvim' },
 
       -- LSP Support
-      {'neovim/nvim-lspconfig'},
+      { 'neovim/nvim-lspconfig' },
 
       -- Autocompletion
-      {'hrsh7th/nvim-cmp'},
-      {'hrsh7th/cmp-buffer'},
-      {'hrsh7th/cmp-path'},
-      {'saadparwaiz1/cmp_luasnip'},
-      {'hrsh7th/cmp-nvim-lsp'},
-      {'hrsh7th/cmp-nvim-lua'},
+      { 'hrsh7th/nvim-cmp' },
+      { 'hrsh7th/cmp-buffer' },
+      { 'hrsh7th/cmp-path' },
+      { 'saadparwaiz1/cmp_luasnip' },
+      { 'hrsh7th/cmp-nvim-lsp' },
+      { 'hrsh7th/cmp-nvim-lua' },
 
       -- Snippets
-      {'L3MON4D3/LuaSnip'},
-      {'rafamadriz/friendly-snippets'},
+      { 'L3MON4D3/LuaSnip' },
+      { 'rafamadriz/friendly-snippets' },
     }
   }
 
@@ -65,4 +68,12 @@ return require('packer').startup(function(use)
   use 'airblade/vim-gitgutter'
 
   use 'folke/todo-comments.nvim'
-  end)
+
+  use {
+    "windwp/nvim-autopairs",
+    config = function() require("nvim-autopairs").setup {} end -- TODO: move this to its own file
+  }
+
+  use 'chaoren/vim-wordmotion'
+  use 'f-person/git-blame.nvim'
+end)
