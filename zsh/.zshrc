@@ -116,3 +116,5 @@ eval "$(direnv hook zsh)"
 # for pdm
 export PATH=/Users/ckaufmann/.local/bin:$PATH
 
+# disable brew autoupdate
+export HOMEBREW_NO_AUTO_UPDATE=1
