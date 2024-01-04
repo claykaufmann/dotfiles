@@ -35,6 +35,16 @@ alias emacs-test='emacs --with-profile doom-test'
 # chezmoi alias
 alias che='chezmoi'
 
+# easier tmux attaching
+function tma() {
+  if [ $# -lt 1 ]
+  then
+    echo "Usage: $funcstack[1] <tmux session number>"
+    return
+  fi
+  tmux attach -t $1 
+}
+
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
