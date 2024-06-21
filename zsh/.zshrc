@@ -2,7 +2,7 @@
 eval "$(starship init zsh)"
 
 # enable atuin
-eval "$(atuin init zsh)"
+eval "$(atuin init zsh --disable-up-arrow)"
 
 # enable vim keybinds (disabled for now)
 # bindkey -v
@@ -61,23 +61,37 @@ function set-aws-env() {
   
   echo "Setting region to us-east-1"
   export AWS_DEFAULT_REGION=us-east-1
+  
+  echo "Refreshing AWS credentials"
 
   if [ "$1" = "prod" ]; then
     echo "Setting environment to production."
     echo "User profile: prod_data"
     export AWS_PROFILE=prod_data
     export AWS_ENV=$1
+    export BETA_ENV=$1
+    export BETA_PLATFORM_ENV=$1
   elif [ "$1" = "staging" ]; then
     echo "Setting environment to staging."
     echo "User profile: staging_data"
     export AWS_PROFILE=staging_data
     export AWS_ENV=$1
+    export BETA_ENV=$1
+    export BETA_PLATFORM_ENV=$1
   else
     echo "Setting environment to $1."
     echo "User profile: dev_data"
     export AWS_PROFILE=dev_data
     export AWS_ENV=$1
+    export BETA_ENV=$1
+    export BETA_PLATFORM_ENV=$1
   fi
+
+  unset AWS_ACCESS_KEY_ID
+  unset AWS_SECRET_ACCESS_KEY
+  unset AWS_SESSION_TOKEN
+  aws sso login
+  eval $(aws configure export-credentials --profile $AWS_PROFILE --format env)
 }
 
 # ~~~~~~~ CONFIG SETUP ~~~~~~~
@@ -125,6 +139,9 @@ eval "$(direnv hook zsh)"
 
 # for pdm
 export PATH=/Users/ckaufmann/.local/bin:$PATH
+
+# add git-filter-repo
+export PATH=/Users/ckaufmann/scripts/git-filter-repo:$PATH
 
 # disable brew autoupdate
 export HOMEBREW_NO_AUTO_UPDATE=1

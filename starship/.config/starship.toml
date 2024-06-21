@@ -23,6 +23,7 @@ symbol = " "
 read_only = " "
 
 [docker_context]
+disabled = true
 symbol = " "
 
 [elixir]
@@ -131,3 +132,6 @@ symbol = " "
 
 [spack]
 symbol = "🅢 "
+
+[time]
+disabled = false
