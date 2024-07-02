@@ -45,6 +45,10 @@ ctrl + cmd - 8 :  yabai -m window --space 8 --focus
 ctrl + cmd - 9 :  yabai -m window --space 9 --focus
 ctrl + cmd - 0 :  yabai -m window --space 10 --focus
 
+# === move windows between monitors ===
+ctrl + cmd + alt - h : yabai -m window --swap west || $(yabai -m window --display west; yabai -m display --focus west)
+ctrl + cmd + alt - l : yabai -m window --swap east  || $(yabai -m window --display east; yabai -m display --focus east)
+
 # === focus specific space
 ctrl - 1 : yabai -m space --focus 1
 ctrl - 2 : yabai -m space --focus 2
