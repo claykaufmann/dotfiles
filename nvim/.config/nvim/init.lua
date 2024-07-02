@@ -1,6 +1,2 @@
--- get core packages and config
-require("core")
-
--- get all plugin configurations
-require("plugins")
-
+-- bootstrap lazy.nvim, LazyVim and your plugins
+require("config.lazy")
