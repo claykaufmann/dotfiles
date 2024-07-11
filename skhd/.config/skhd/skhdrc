@@ -61,11 +61,14 @@ ctrl - 8 : yabai -m space --focus 8
 ctrl - 9 : yabai -m space --focus 9
 ctrl - 0 : yabai -m space --focus 10
 
-# Toggle focused window fullscreen
+# Toggle focused window non native fullscreen
 ctrl + cmd - f : yabai -m window --toggle zoom-fullscreen
 
-# Toggle window to be floating in bsp spc
-ctrl + alt + cmd - f : yabai -m window --toggle float
+# Toggle window to be native fullscreen
+ctrl + alt + cmd - f : yabai -m window --toggle native-fullscreen
 
 # hot restart yabai and skhd
 ctrl + alt + cmd - r : yabai --restart-service && skhd --reload
+
+# swap split direction
+alt - e : yabai -m window --toggle split
