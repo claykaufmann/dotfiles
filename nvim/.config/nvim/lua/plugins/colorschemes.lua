@@ -56,9 +56,17 @@ return {
   },
 
   {
+    "navarasu/onedark.nvim",
+    lazy = true,
+    opts = {
+      style = "cool",
+    },
+  },
+
+  {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "catppuccin-frappe",
+      colorscheme = "onedark",
     },
   },
 }

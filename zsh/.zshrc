@@ -17,11 +17,11 @@ alias ls='eza'
 alias ll='eza -l -a --icons'
 alias l.='ll -d .* '
 
+# use bat instead of cat
+alias cat='bat'
+
 # g for git for quicker git commands
 alias g='git'
-
-# kitty ssh fixes
-alias kssh="kitty +kitten ssh"
 
 # vim
 alias vim='nvim'
@@ -31,9 +31,6 @@ alias doom-test='~/doom-emacs-test/bin/doom'
 
 # launch doom alias
 alias emacs-test='emacs --with-profile doom-test'
-
-# chezmoi alias
-alias che='chezmoi'
 
 # easier tmux attaching
 function tma() {
@@ -145,3 +142,4 @@ export PATH=/Users/ckaufmann/scripts/git-filter-repo:$PATH
 
 # disable brew autoupdate
 export HOMEBREW_NO_AUTO_UPDATE=1
+export PATH="/opt/homebrew/opt/go@1.22/bin:$PATH"
