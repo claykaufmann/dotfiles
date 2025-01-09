@@ -143,3 +143,7 @@ export PATH=/Users/ckaufmann/scripts/git-filter-repo:$PATH
 # disable brew autoupdate
 export HOMEBREW_NO_AUTO_UPDATE=1
 export PATH="/opt/homebrew/opt/go@1.22/bin:$PATH"
+
+# brew shell completions
+autoload -Uz compinit
+compinit
