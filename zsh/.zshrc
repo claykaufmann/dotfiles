@@ -122,9 +122,9 @@ export PATH="$HOME/doom-emacs/bin:$PATH"
 
 export VIRTUAL_ENV_DISABLE_PROMPT=true
 
-# enable zsh auto complete and syntax highlight
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# enable zsh auto complete and syntax highlight with homebrew
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # set new syntax highlight colors
 ZSH_HIGHLIGHT_STYLES[suffix-alias]='fg=#8fee96'
