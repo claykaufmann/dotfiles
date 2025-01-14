@@ -46,7 +46,6 @@ brew install eza nvim pyenv pyenv-virtualenv git-delta git git-extras starship t
 # source new zshrc, getting pyenv completions
 source "$HOME/.zshrc"
 
-
 echo "Installing python tooling"
 
 # install essential python build packages before installing pyenv python versions
@@ -65,3 +64,4 @@ pip install --upgrade pip
 pip install pynvim black ruff-lsp ruff flake8
 pyenv deactivate
 
+source "$HOME/.zshrc"
