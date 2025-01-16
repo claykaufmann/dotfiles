@@ -70,6 +70,7 @@ inner.horizontal = 5
 inner.vertical = 5
 outer.left = 5
 outer.bottom = 5
+# top gap needs to include my sketchybar space for monitors and notched monitors
 outer.top = [{ monitor."^built-in retina display$" = 12 }, 45]
 outer.right = 5
 
