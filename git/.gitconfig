@@ -72,4 +72,7 @@
   tool = meld
 
 [push]
-	autoSetupRemote = true
+  autoSetupRemote = true
+
+[includeIf "gitdir:~/projects/"]
+    path = .gitconfig-work
