@@ -15,8 +15,10 @@ after-login-command = []
 after-startup-command = ['exec-and-forget sketchybar']
 
 # Notify Sketchybar about workspace change
-exec-on-workspace-change = ['/bin/bash', '-c',
-    'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
+exec-on-workspace-change = [
+  '/bin/bash',
+  '-c',
+  'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
 ]
 
 # Start AeroSpace at login
@@ -68,8 +70,41 @@ inner.horizontal = 5
 inner.vertical = 5
 outer.left = 5
 outer.bottom = 5
-outer.top = 5
+outer.top = [{ monitor."^built-in retina display$" = 12 }, 45]
 outer.right = 5
+
+[workspace-to-monitor-force-assignment]
+# always put first 3 workspaces on main monitor, 1 for alacritty, 2 for browser, 3 for vscode or other
+1 = 'main'
+2 = 'main'
+3 = 'main'
+
+# 4/5 used for browsers, at work put in secondary dell monitor, else retina display
+# TODO: will need to modify this ordering to include my alt monitor first somehow
+4 = [3, '^built-in retina display$']
+5 = [3, '^built-in retina display$']
+
+# 6-9 used for tertiary apps
+# 6 - alt terminal
+# 7 - slack
+# 8 - obsidian
+# 9 - spotify/other
+6 = [
+  '^built-in retina display$',
+  '^dell p2422he (2)$',
+] # TODO: change that alt monitor to be my monitor at home
+7 = [
+  '^built-in retina display$',
+  '^dell p2422he (2)$',
+] # TODO: change that alt monitor to be my monitor at home
+8 = [
+  '^built-in retina display$',
+  '^dell p2422he (2)$',
+] # TODO: change that alt monitor to be my monitor at home
+9 = [
+  '^built-in retina display$',
+  '^dell p2422he (2)$',
+] # TODO: change that alt monitor to be my monitor at home
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
