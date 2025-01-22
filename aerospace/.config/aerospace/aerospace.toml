@@ -9,10 +9,20 @@ after-login-command = []
 # You can use it to add commands that run after AeroSpace startup.
 # 'after-startup-command' is run after 'after-login-command'
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
-after-startup-command = []
+# Run Sketchybar together with AeroSpace
+# sketchbar has a built-in detection of already running process,
+# so it won't be run twice on AeroSpace restart
+after-startup-command = ['exec-and-forget sketchybar']
+
+# Notify Sketchybar about workspace change
+exec-on-workspace-change = [
+  '/bin/bash',
+  '-c',
+  'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
+]
 
 # Start AeroSpace at login
-start-at-login = false
+start-at-login = true
 
 # Normalizations. See: https://nikitabobko.github.io/AeroSpace/guide#normalization
 enable-normalization-flatten-containers = true
@@ -60,8 +70,29 @@ inner.horizontal = 5
 inner.vertical = 5
 outer.left = 5
 outer.bottom = 5
-outer.top = 5
+# top gap needs to include my sketchybar space for monitors and notched monitors
+outer.top = [{ monitor."^built-in retina display$" = 12 }, 45]
 outer.right = 5
+
+[workspace-to-monitor-force-assignment]
+# always put first 2 workspaces on main monitor, 1 for alacritty, 2 for other (vscode, browser)
+1 = 'main'
+2 = 'main'
+
+# 3/4/5 used for browsers, use secondary monitor if its there
+3 = ['secondary', 1, '^built-in retina display$']
+4 = ['secondary', 1, '^built-in retina display$']
+5 = ['secondary', 1, '^built-in retina display$']
+
+# 6-9 used for tertiary apps
+# 6 - alt terminal
+# 7 - slack
+# 8 - obsidian
+# 9 - spotify/other
+6 = [3, 'secondary', '^built-in retina display$']
+7 = [3, 'secondary', '^built-in retina display$']
+8 = [3, 'secondary', '^built-in retina display$']
+9 = [3, 'secondary', '^built-in retina display$']
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
