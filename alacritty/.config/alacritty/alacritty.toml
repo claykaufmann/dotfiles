@@ -27,6 +27,6 @@ x = 20
 y = 5
 
 [general]
-import = ["/Users/ckaufmann/.config/alacritty/themes/dracula.toml"]
-# import = ["~/.config/alacritty/themes/catppuccin-frappe.toml"]
+# import = ["/Users/ckaufmann/.config/alacritty/themes/dracula.toml"]
+import = ["~/.config/alacritty/themes/catppuccin-frappe.toml"]
 # import = ["~/.config/alacritty/themes/catppuccin-macchiato.toml"]
