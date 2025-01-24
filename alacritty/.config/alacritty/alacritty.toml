@@ -23,7 +23,7 @@ family = "FiraCode Nerd Font Mono"
 
 [window]
 dynamic_title = true
-opacity = 0.92
+opacity = 0.94
 
 [window.padding]
 x = 20
