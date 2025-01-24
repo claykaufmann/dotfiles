@@ -89,10 +89,10 @@ outer.right = 5
 # 7 - slack
 # 8 - obsidian
 # 9 - spotify/other
-6 = [3, 'secondary', '^built-in retina display$']
-7 = [3, 'secondary', '^built-in retina display$']
-8 = [3, 'secondary', '^built-in retina display$']
-9 = [3, 'secondary', '^built-in retina display$']
+6 = ['V277U', 3, 'secondary', '^built-in retina display$']
+7 = ['V277U', 3, 'secondary', '^built-in retina display$']
+8 = ['V277U', 3, 'secondary', '^built-in retina display$']
+9 = ['V277U', 3, 'secondary', '^built-in retina display$']
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
