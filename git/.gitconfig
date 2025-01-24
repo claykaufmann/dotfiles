@@ -74,5 +74,5 @@
 [push]
   autoSetupRemote = true
 
-[includeIf "gitdir:~/projects/"]
+[includeIf "gitdir:~/beta/"]
     path = .gitconfig-work
