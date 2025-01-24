@@ -6,7 +6,7 @@ return {
     priority = 1000,
     opts = {
       transparent_background = true,
-      flavour = "auto",
+      flavour = "frappe",
     },
   },
 
