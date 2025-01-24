@@ -16,7 +16,10 @@ term = "xterm-256color"
 size = 16
 
 [font.normal]
-family = "JetBrainsMono Nerd Font Mono"
+family = "FiraCode Nerd Font Mono"
+# family = "Hack Nerd Font Mono"
+# family = "CaskaydiaCove Nerd Font Mono"
+# family = "JetBrainsMono Nerd Font Mono"
 
 [window]
 dynamic_title = true
