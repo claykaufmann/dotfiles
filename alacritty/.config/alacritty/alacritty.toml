@@ -1,0 +1,32 @@
+[cursor]
+unfocused_hollow = true
+
+[cursor.style]
+blinking = "Always"
+shape = "Block"
+
+[cursor.vi_mode_style]
+blinking = "Always"
+shape = "Block"
+
+[env]
+term = "xterm-256color"
+
+[font]
+size = 16
+
+[font.normal]
+family = "JetBrainsMono Nerd Font Mono"
+
+[window]
+dynamic_title = true
+opacity = 0.92
+
+[window.padding]
+x = 20
+y = 5
+
+[general]
+# import = ["/Users/ckaufmann/.config/alacritty/themes/dracula.toml"]
+import = ["~/.config/alacritty/themes/catppuccin-frappe.toml"]
+# import = ["~/.config/alacritty/themes/catppuccin-macchiato.toml"]
