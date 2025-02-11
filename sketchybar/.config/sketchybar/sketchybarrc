@@ -75,6 +75,9 @@ sketchybar --add item volume right \
 # Add vpn status
 sketchybar --add alias "FortiTray,Item-0" right
 
+# add focus status
+sketchybar --add alias "Control Center,FocusModes" right
+
 ##### MISC CONFIG #####
 sketchybar --hotload true
 sketchybar --update
