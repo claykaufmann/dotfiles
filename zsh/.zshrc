@@ -75,6 +75,13 @@ function set-aws-env() {
     export AWS_ENV=$1
     export BETA_ENV=$1
     export BETA_PLATFORM_ENV=$1
+  elif [ "$1" = "dev-mfg" ]; then
+    echo "Setting environment to staging."
+    echo "User profile: dev-mfg"
+    export AWS_PROFILE=dev-mfg
+    export AWS_ENV=$1
+    export BETA_ENV=$1
+    export BETA_PLATFORM_ENV=$1
   else
     echo "Setting environment to $1."
     echo "User profile: dev_data"
