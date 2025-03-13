@@ -8,3 +8,9 @@ cmd + shift - x : open -n -a "Alacritty"
 cmd + shift - o : open -a "Obsidian"  # no -n, as we don't want a new window here
 cmd + shift - s : open -a "Slack"  # no -n like abovd
 
+# === Alacritty Hotkeys ===
+# large font size hotkey
+cmd + shift - t : alacritty msg config font.size 22
+
+# back to default fontsize
+cmd + shift - i : alacritty msg config -r
