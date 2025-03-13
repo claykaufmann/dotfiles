@@ -43,6 +43,10 @@ brew install openssl@3
 # other essential packages I use
 brew install eza nvim pyenv pyenv-virtualenv git-delta git git-extras starship tmux atuin direnv htop bat pgcli rsync tldr wget ripgrep fzf fd postgresql@14 pdm zsh-autosuggestions zsh-syntax-highlighting
 
+# tmux install
+mkdir -p ~/.config/tmux/plugins/catppuccin
+git clone -b v2.1.2 https://github.com/catppuccin/tmux.git ~/.config/tmux/plugins/catppuccin/tmux
+
 # source new zshrc, getting pyenv completions
 source "$HOME/.zshrc"
 
