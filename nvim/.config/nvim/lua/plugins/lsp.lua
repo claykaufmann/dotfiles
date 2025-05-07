@@ -12,12 +12,9 @@ return {
               inlayHints = {
                 callArgumentNames = false,
               },
+              autoSearchPaths = true,
+              useLibraryCodeForTypes = false,
             },
-          },
-        },
-        python = {
-          analysis = {
-            ignore = { "*" },
           },
         },
       },
