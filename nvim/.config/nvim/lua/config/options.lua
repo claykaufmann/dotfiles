@@ -5,3 +5,6 @@ vim.g.autoformat = false
 vim.g.python3_host_prog = "~/.pyenv/versions/py3nvim/bin/python"
 
 vim.g.lazyvim_python_lsp = "basedpyright"
+
+-- enforce prettier to have a config file
+vim.g.lazyvim_prettier_needs_config = false

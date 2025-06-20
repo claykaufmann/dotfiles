@@ -10,3 +10,7 @@ vim.keymap.set("n", "<leader>wl", "<C-w>l", { desc = "Go to Right Window", remap
 -- window splitting
 vim.keymap.set("n", "<leader>wv", "<C-W>v", { desc = "Split Window Below", remap = true })
 vim.keymap.set("n", "<leader>ws", "<C-W>s", { desc = "Split Window Right", remap = true })
+
+-- set claude code keymap
+vim.keymap.set('n', '<leader>cc', '<cmd>ClaudeCode<CR>', { desc = 'Toggle Claude Code' })
+
