@@ -12,5 +12,7 @@ vim.keymap.set("n", "<leader>wv", "<C-W>v", { desc = "Split Window Below", remap
 vim.keymap.set("n", "<leader>ws", "<C-W>s", { desc = "Split Window Right", remap = true })
 
 -- set claude code keymap
-vim.keymap.set('n', '<leader>cc', '<cmd>ClaudeCode<CR>', { desc = 'Toggle Claude Code' })
+vim.keymap.set("n", "<leader>ac", "<cmd>ClaudeCode<CR>", { desc = "Toggle Claude Code" })
 
+-- Exit terminal mode with Escape key
+vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })

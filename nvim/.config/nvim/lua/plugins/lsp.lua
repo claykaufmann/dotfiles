@@ -8,13 +8,15 @@ return {
             disableOrganizeImports = true,
             analysis = {
               diagnosticMode = "openFilesOnly",
-              typeCheckingMode = "off",
+              typeCheckingMode = "basic",
               inlayHints = {
                 callArgumentNames = false,
               },
               autoSearchPaths = true,
-              useLibraryCodeForTypes = false,
+              useLibraryCodeForTypes = true,
+              stubPath = "/Users/ckaufmann/misc/python-type-stubs",
             },
+            disableTaggedHints = true,
           },
         },
       },

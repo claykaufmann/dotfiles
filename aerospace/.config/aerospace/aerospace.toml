@@ -81,19 +81,19 @@ outer.right = 5
 2 = 'main'
 
 # 3/4/5 used for browsers, use secondary monitor if its there
-3 = ['secondary', 1, '^built-in retina display$']
-4 = ['secondary', 1, '^built-in retina display$']
-5 = ['secondary', 1, '^built-in retina display$']
+3 = ['DELL U2422HE', 'secondary', '^built-in retina display$']
+4 = ['DELL U2422HE', 'secondary', '^built-in retina display$']
+5 = ['DELL U2422HE', 'secondary', '^built-in retina display$']
 
 # 6-9 used for tertiary apps
 # 6 - alt terminal
 # 7 - slack
 # 8 - obsidian
 # 9 - spotify/other
-6 = ['V277U', 3, 'secondary', '^built-in retina display$']
-7 = ['V277U', 3, 'secondary', '^built-in retina display$']
-8 = ['V277U', 3, 'secondary', '^built-in retina display$']
-9 = ['V277U', 3, 'secondary', '^built-in retina display$']
+6 = ['Sidecar Display', 3, 'secondary', '^built-in retina display$']
+7 = ['Sidecar Display', 3, 'secondary', '^built-in retina display$']
+8 = ['Sidecar Display', 3, 'secondary', '^built-in retina display$']
+9 = ['Sidecar Display', 3, 'secondary', '^built-in retina display$']
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
