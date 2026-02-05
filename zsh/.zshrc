@@ -42,11 +42,6 @@ function tma() {
   tmux attach -t $1 
 }
 
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
-
 ##### BETA ALIASES #####
 # handy function to set aws environment
 function set-aws-env() {
