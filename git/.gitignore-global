@@ -5,3 +5,14 @@
 asdf.py
 fdsa.py
 .pdm-python
+
+# Beads issue tracker (bd)
+.beads/
+
+# Dolt database files (bd init)
+.dolt/
+
+# Agent/planning artifacts
+AGENTS.md
+openspec*
+opsx*
