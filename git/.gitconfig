@@ -46,6 +46,12 @@
 [interactive]
   diffFilter = delta --color-only --features=interactive
 
+[include]
+	path = PATH/TO/delta/themes/catppuccin.gitconfig
+
+[delta]
+	features = catppuccin-frappe
+
 [delta]
   features = side-by-side decorations
   syntax-theme = Dracula
