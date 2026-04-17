@@ -1,2 +1,4 @@
 tmux/.config/tmux/plugins/catppuccin
 .DS_Store
+
+lazygit/*/state.yml
