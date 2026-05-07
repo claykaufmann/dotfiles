@@ -7,6 +7,7 @@ return {
 		opts = {
 			transparent_background = true,
 			flavour = "frappe",
+			no_italic = true,
 		},
 		config = function(_, opts)
 			require("catppuccin").setup(opts)

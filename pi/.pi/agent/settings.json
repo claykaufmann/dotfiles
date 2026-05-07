@@ -1,8 +1,18 @@
 {
   "lastChangelogVersion": "0.73.1",
   "defaultProvider": "amazon-bedrock",
-  "defaultModel": "us.anthropic.claude-sonnet-4-6",
+  "defaultModel": "us.anthropic.claude-opus-4-6-v1",
+  "theme": "catppuccin-frappe",
   "packages": [
-    "npm:pi-subagents"
-  ]
+    "npm:pi-subagents",
+    "npm:@sherif-fanous/pi-catppuccin",
+    "npm:@juicesharp/rpiv-pi",
+    "npm:pi-powerline-footer"
+  ],
+  "showHardwareCursor": true,
+  "quietStartup": true,
+  "editorPaddingX": 0,
+  "powerline": {
+    "preset": "default"
+  }
 }
