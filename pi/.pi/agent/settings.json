@@ -1,0 +1,8 @@
+{
+  "lastChangelogVersion": "0.73.1",
+  "defaultProvider": "amazon-bedrock",
+  "defaultModel": "us.anthropic.claude-sonnet-4-6",
+  "packages": [
+    "npm:pi-subagents"
+  ]
+}
