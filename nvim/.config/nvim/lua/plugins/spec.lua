@@ -50,4 +50,11 @@ return {
     -- mode is `n` by default. For more advanced options, check the section on key mappings
     keys = { "<C-a>", { "<C-x>", mode = "n" } },
   },
+
+  -- refactoring.nvim now requires lewis6991/async.nvim as of its v2 rewrite,
+  -- but the LazyVim extra hasn't added it as a dependency yet.
+  {
+    "ThePrimeagen/refactoring.nvim",
+    dependencies = { "lewis6991/async.nvim" },
+  },
 }

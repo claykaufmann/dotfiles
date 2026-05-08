@@ -7,9 +7,30 @@ return {
     ft = { "org" },
     keys = {
       { "<leader>oc", '<cmd>lua require("orgmode").action("capture.prompt")<cr>', desc = "Org Capture" },
-      { "<leader>oa", '<cmd>lua require("orgmode").action("agenda.prompt")<cr>', desc = "Org Agenda" },
+      -- refile queue: tag-search agenda for :refile: across all agenda files.
+      -- bypasses org-super-agenda (which only shows TODO/dated items, never plain notes).
+      -- todo_only = false is required so plain inbox headlines aren't filtered out.
+      {
+        "<leader>or",
+        '<cmd>lua require("orgmode").action("agenda.tags", { match_query = "refile", todo_only = false })<cr>',
+        desc = "Org Refile Queue",
+      },
     },
     config = function()
+      -- registered here (not in telescope-orgmode) so it's always set before org buffers open,
+      -- since this plugin loads at VeryLazy rather than on-demand like telescope-orgmode.
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "org",
+        callback = function()
+          vim.keymap.set(
+            "n",
+            "<leader>or",
+            "<cmd>Telescope orgmode refile_heading<cr>",
+            { buffer = true, desc = "Refile to heading" }
+          )
+        end,
+      })
+
       require("orgmode").setup({
         -- top-level files + dailies + project nodes (which carry their own TODOs);
         -- thoughts/ excluded since it's PKM, not tasks
@@ -40,17 +61,14 @@ return {
         org_agenda_span = "week",
         org_deadline_warning_days = 3,
 
-        -- custom agenda views; accessible from the <leader>oa picker
-        org_agenda_custom_commands = {
-          r = {
-            description = "Refile queue",
-            types = {
-              {
-                type = "tags",
-                match = "refile",
-                org_agenda_overriding_header = "Items tagged :refile: (process me)",
-              },
-            },
+        mappings = {
+          global = {
+            -- freed for org-super-agenda
+            org_agenda = false,
+          },
+          org = {
+            -- freed so <leader>or in org buffers can use the telescope refile picker
+            org_refile = false,
           },
         },
 
@@ -77,6 +95,11 @@ return {
       "nvim-orgmode/orgmode",
       { "lukas-reineke/headlines.nvim", config = true },
     },
+    cmd = { "OrgSuperAgenda" },
+    keys = {
+      { "<leader>oa", "<cmd>OrgSuperAgenda<cr>", desc = "Org Super Agenda" },
+      { "<leader>oA", "<cmd>OrgSuperAgenda!<cr>", desc = "Org Super Agenda (fullscreen)" },
+    },
     config = function()
       require("org-super-agenda").setup({
         org_files = {},
@@ -91,6 +114,25 @@ return {
           { name = "DONE", color = "#50FA7B", strike_through = true },
           { name = "CANCELLED", color = "#666666", strike_through = true },
         },
+        custom_views = {
+          -- refile queue lives on <leader>or via orgmode's agenda.tags directly;
+          -- org-super-agenda's hardcoded filter excludes non-TODO/non-dated headlines.
+          in_progress = {
+            name = "In Progress",
+            filter = "todo:IN-PROGRESS",
+            title = "In Progress",
+          },
+          waiting = {
+            name = "Waiting",
+            filter = "todo:WAITING",
+            title = "Waiting / Blocked",
+          },
+          upcoming = {
+            name = "Upcoming (7 days)",
+            filter = "sched>=0 sched<7 -is:done",
+            title = "Upcoming — Next 7 Days",
+          },
+        },
       })
     end,
   },
@@ -99,7 +141,52 @@ return {
     "chipsenkbeil/org-roam.nvim",
     dependencies = { "nvim-orgmode/orgmode" },
     keys = {
-      { "<leader>of", '<cmd>lua require("org-roam").api.find_node()<cr>', desc = "Roam Find Node" },
+      {
+        "<leader>of",
+        function()
+          local roam = require("org-roam")
+          local pickers = require("telescope.pickers")
+          local finders = require("telescope.finders")
+          local conf = require("telescope.config").values
+          local actions = require("telescope.actions")
+          local action_state = require("telescope.actions.state")
+
+          local items = {}
+          for _, id in ipairs(roam.database:ids()) do
+            local node = roam.database:get_sync(id)
+            if node then
+              table.insert(items, { id = id, title = node.title, file = node.file })
+            end
+          end
+          table.sort(items, function(a, b) return a.title < b.title end)
+
+          pickers.new({}, {
+            prompt_title = "Roam Nodes",
+            finder = finders.new_table({
+              results = items,
+              entry_maker = function(entry)
+                return {
+                  value = entry,
+                  display = entry.title,
+                  ordinal = entry.title,
+                  filename = entry.file,
+                }
+              end,
+            }),
+            sorter = conf.generic_sorter({}),
+            previewer = conf.file_previewer({}),
+            attach_mappings = function(prompt_bufnr)
+              actions.select_default:replace(function()
+                actions.close(prompt_bufnr)
+                local sel = action_state.get_selected_entry()
+                if sel then vim.cmd.edit(sel.value.file) end
+              end)
+              return true
+            end,
+          }):find()
+        end,
+        desc = "Roam Find Node",
+      },
       { "<leader>oi", '<cmd>lua require("org-roam").api.insert_node()<cr>', desc = "Roam Insert Link" },
       { "<leader>on", '<cmd>lua require("org-roam").api.capture_node()<cr>', desc = "Roam Capture Node" },
       { "<leader>ob", '<cmd>lua require("org-roam").api.toggle_roam_buffer()<cr>', desc = "Roam Backlinks Buffer" },

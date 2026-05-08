@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/claykaufmann/Dropbox/**)",
+      "Bash(mkdir -p ~/Dropbox/Vaults/gible)",
+      "Bash(mv ~/Dropbox/org/todo.org ~/Dropbox/org/inbox.org ~/Dropbox/org/reading.org ~/Dropbox/Vaults/gible/)",
+      "Bash(mv ~/Dropbox/org/notes ~/Dropbox/org/dailies ~/Dropbox/Vaults/gible/)",
+      "Bash(nvim --headless -c \"lua require\\('orgmode'\\)\" -c \"qa\")",
+      "Bash(nvim --headless -c \"lua require\\('org-super-agenda'\\).setup\\({org_directories={'~/Dropbox/Vaults/gible'}}\\)\" -c \"qa\")",
+      "Bash(nvim --headless -c \"lua print\\(vim.inspect\\(vim.api.nvim_get_runtime_file\\('lua/async.lua', true\\)\\)\\)\" -c \"qa\")",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Read(//Users/claykaufmann/Library/CloudStorage/Dropbox/Vaults/gible/**)",
+      "Read(//Users/claykaufmann/Library/CloudStorage/Dropbox/Vaults/gible/notes/**)",
+      "Read(//Users/claykaufmann/Library/CloudStorage/Dropbox/Vaults/gible/notes/dailies/**)",
+      "Bash(mkdir -p ~/Dropbox/Vaults/gible/dailies)",
+      "Bash(mv ~/Dropbox/Vaults/gible/notes/daily/2026-04-26.org ~/Dropbox/Vaults/gible/dailies/)",
+      "Bash(rmdir ~/Dropbox/Vaults/gible/notes/daily ~/Dropbox/Vaults/gible/notes/dailies)",
+      "Bash(rm -f ~/Dropbox/Vaults/gible/notes/.DS_Store)",
+      "Bash(rmdir ~/Dropbox/Vaults/gible/notes)",
+      "Bash(mv ~/Dropbox/Vaults/gible/notes/dailies/2026-04-26.org ~/Dropbox/Vaults/gible/dailies/)"
+    ]
+  }
+}

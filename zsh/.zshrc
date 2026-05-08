@@ -173,10 +173,6 @@ export PATH="/opt/homebrew/opt/go@1.22/bin:$PATH"
 autoload -Uz compinit
 compinit
 
-export ANTHROPIC_BEDROCK_BASE_URL=https://proxy.chat.beta.team/bedrock
-export CLAUDE_CODE_USE_BEDROCK=1
-export CLAUDE_CODE_SKIP_BEDROCK_AUTH=1
-
 purge-cdk-out() {
     if [ $# -eq 0 ]; then
         echo "Usage: purge-cdk-out <directory>"
