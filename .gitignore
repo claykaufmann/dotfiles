@@ -2,4 +2,4 @@ tmux/.config/tmux/plugins/catppuccin
 .DS_Store
 
 lazygit/.config/lazygit/state.yml
-
+.pi/

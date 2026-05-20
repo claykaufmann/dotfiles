@@ -18,11 +18,14 @@
     "allowRead": [
       ".",
       "~/.config",
-      "~/.local"
+      "~/.local",
+      "~/.nvm/versions/node/v22.17.0/lib/node_modules/@juicesharp/rpiv-pi",
+      "~/.nvm/versions/node/v18.17.0/lib/node_modules/@juicesharp/rpiv-pi"
     ],
     "allowWrite": [
       "/tmp",
-      "/tmp/runenv"
+      "/tmp/runenv",
+      "/bin/ps"
     ],
     "denyWrite": [
       ".env",
