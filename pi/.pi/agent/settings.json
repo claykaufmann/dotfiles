@@ -1,18 +1,29 @@
 {
-  "lastChangelogVersion": "0.73.1",
+  "lastChangelogVersion": "0.74.0",
   "defaultProvider": "amazon-bedrock",
-  "defaultModel": "us.anthropic.claude-opus-4-6-v1",
+  "defaultModel": "us.anthropic.claude-opus-4-7",
   "theme": "catppuccin-frappe",
   "packages": [
-    "npm:pi-subagents",
     "npm:@sherif-fanous/pi-catppuccin",
     "npm:@juicesharp/rpiv-pi",
-    "npm:pi-powerline-footer"
+    "npm:pi-powerline-footer",
+    "npm:@tintinweb/pi-subagents",
+    "npm:@juicesharp/rpiv-ask-user-question",
+    "npm:@juicesharp/rpiv-todo",
+    "npm:@juicesharp/rpiv-advisor",
+    "npm:@juicesharp/rpiv-btw",
+    "npm:@juicesharp/rpiv-i18n",
+    "npm:@juicesharp/rpiv-web-tools",
+    "npm:@juicesharp/rpiv-args",
+    "npm:@zenobius/pi-worktrees",
+    "npm:pi-sandbox"
   ],
   "showHardwareCursor": true,
   "quietStartup": true,
   "editorPaddingX": 0,
   "powerline": {
     "preset": "default"
-  }
+  },
+  "defaultThinkingLevel": "high",
+  "hideThinkingBlock": true
 }

@@ -1,0 +1,34 @@
+{
+  "enabled": true,
+  "network": {
+    "allowLocalBinding": true,
+    "allowAllUnixSockets": true,
+    "allowedDomains": [
+      "github.com",
+      "*.github.com",
+      "gitlab.beta.team"
+    ],
+    "deniedDomains": []
+  },
+  "filesystem": {
+    "denyRead": [
+      "/Users",
+      "/home"
+    ],
+    "allowRead": [
+      ".",
+      "~/.config",
+      "~/.local"
+    ],
+    "allowWrite": [
+      "/tmp",
+      "/tmp/runenv"
+    ],
+    "denyWrite": [
+      ".env",
+      ".env.*",
+      "*.pem",
+      "*.key"
+    ]
+  }
+}
