@@ -3,3 +3,5 @@ tmux/.config/tmux/plugins/catppuccin
 
 lazygit/.config/lazygit/state.yml
 .pi/
+
+!pi/.pi/
