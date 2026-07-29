@@ -1,6 +1,7 @@
 tmux/.config/tmux/plugins/catppuccin
 .DS_Store
 
+.claude/*local*
 lazygit/.config/lazygit/state.yml
 .pi/
 
