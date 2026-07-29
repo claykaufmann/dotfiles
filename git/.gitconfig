@@ -1,6 +1,6 @@
 [user]
   name = Clay Kaufmann
-  email = claykaufmann@gmail.com
+  email = ckaufmann@beta.team
 
 [pull]
   rebase = false
@@ -47,17 +47,13 @@
   diffFilter = delta --color-only --features=interactive
 
 [include]
-	path = PATH/TO/delta/themes/catppuccin.gitconfig
+	path = ~/.config/delta/catppuccin.gitconfig
 
 [delta]
-	features = catppuccin-frappe
-
-[delta]
-  features = side-by-side decorations
-  syntax-theme = Dracula
-  plus-style = syntax "#003800"
-  minus-style = syntax "#3f0001"
+  features = decorations catppuccin-frappe
   navigate = true
+  line-numbers = true
+  detect-moved-lines = blocks
 
 [diff]
   colorMoved = default
@@ -76,6 +72,7 @@
 
 [merge]
   tool = meld
+  conflictstyle = diff3
 
 [push]
   autoSetupRemote = true

@@ -100,6 +100,14 @@ function set-aws-env() {
     export BETA_ENV=prod
     export BETA_PLATFORM_ENV=prod
     export STAGE=prod
+  elif [ "$1" = "prod-mfg" ]; then
+    echo "Setting environment to prod-manufacturing."
+    echo "User profile: prod-manufacturing"
+    export AWS_PROFILE=prod-mfg
+    export AWS_ENV=prod
+    export BETA_ENV=prod
+    export BETA_PLATFORM_ENV=prod
+    export STAGE=prod
   else
     echo "Setting environment to $1."
     echo "User profile: dev_data"
@@ -172,10 +180,6 @@ export PATH="/opt/homebrew/opt/go@1.22/bin:$PATH"
 # brew shell completionsexport
 autoload -Uz compinit
 compinit
-
-export ANTHROPIC_BEDROCK_BASE_URL=https://proxy.chat.beta.team/bedrock
-export CLAUDE_CODE_USE_BEDROCK=1
-export CLAUDE_CODE_SKIP_BEDROCK_AUTH=1
 
 purge-cdk-out() {
     if [ $# -eq 0 ]; then

@@ -1,0 +1,57 @@
+{
+  "enabled": true,
+  "network": {
+    "allowLocalBinding": true,
+    "allowAllUnixSockets": true,
+    "allowedDomains": [
+      "github.com",
+      "*.github.com",
+      "gitlab.beta.team",
+      "*.beta.team",
+      "pypi.org",
+      "files.pythonhosted.org",
+      "registry.npmjs.org",
+      "beta-dev-temp-files.s3.amazonaws.com",
+      "beta-temp-files.s3.amazonaws.com",
+      "mcp.linear.app"
+    ],
+    "deniedDomains": []
+  },
+  "filesystem": {
+    "allowGitConfig": true,
+    "denyRead": [],
+    "allowRead": [
+      ".",
+      "~/.config",
+      "~/.local",
+      "~/.nvm/versions/node/v22.22.3/lib/node_modules/@juicesharp/rpiv-pi",
+      "~/.nvm/versions/node/v22.22.3/lib/node_modules/pi-sandbox",
+      "~/.nvm/versions/node/v22.22.3/lib/node_modules/@earendil-works/pi-coding-agent",
+      "~/.gitconfig",
+      "~/.cache",
+      "~/.netrc",
+      "~/.docker",
+      "/Users/ckaufmann/.pi/agent/npm/node_modules/@juicesharp/rpiv-pi/skills/resume-handoff/SKILL.md",
+      "/Users/ckaufmann/dotfiles/pi/.pi/agent/skills/trino-query/SKILL.md",
+      "~/.config/mcp/mcp.json",
+      "/tmp",
+      "/Users/ckaufmann/beta/mfg/py-beta-problem-solver/beta/plane_builder/domains/plans/models/plan_mbom_justification.py"
+    ],
+    "allowWrite": [
+      "/tmp",
+      "/tmp/*",
+      "/private/tmp",
+      "~/.cache",
+      ".",
+      "~/dotfiles/pi/.pi/agent/skills",
+      "~/.pi/agent/skills",
+      "/Users/ckaufmann/beta/mfg/py-beta-problem-solver/.git"
+    ],
+    "denyWrite": [
+      ".env",
+      ".env.*",
+      "*.pem",
+      "*.key"
+    ]
+  }
+}

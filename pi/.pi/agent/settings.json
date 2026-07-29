@@ -1,0 +1,43 @@
+{
+  "lastChangelogVersion": "0.82.1",
+  "defaultProvider": "beta-litellm",
+  "defaultModel": "gpt-5.6-sol",
+  "theme": "catppuccin-frappe",
+  "packages": [
+    "npm:@sherif-fanous/pi-catppuccin",
+    {
+      "source": "npm:@juicesharp/rpiv-pi",
+      "skills": []
+    },
+    "npm:pi-powerline-footer",
+    "npm:@tintinweb/pi-subagents",
+    "npm:@juicesharp/rpiv-ask-user-question",
+    "npm:@juicesharp/rpiv-todo",
+    "npm:@juicesharp/rpiv-advisor",
+    "npm:@juicesharp/rpiv-btw",
+    "npm:@juicesharp/rpiv-i18n",
+    "npm:@juicesharp/rpiv-web-tools",
+    "npm:@juicesharp/rpiv-args",
+    "npm:@zenobius/pi-worktrees",
+    "npm:pi-sandbox",
+    "npm:@juicesharp/rpiv-workflow",
+    "npm:pi-mcp-adapter",
+    "npm:pi-agent-browser-native"
+  ],
+  "showHardwareCursor": true,
+  "quietStartup": true,
+  "editorPaddingX": 0,
+  "powerline": {
+    "preset": "default"
+  },
+  "defaultThinkingLevel": "high",
+  "hideThinkingBlock": false,
+  "enabledModels": [
+    "gpt-5.5",
+    "gpt-5.6-sol",
+    "us.anthropic.claude-fable-5",
+    "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "us.anthropic.claude-opus-5",
+    "us.anthropic.claude-sonnet-5"
+  ]
+}

@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+readonly STATUS_OPTION="@ck_agent_status"
+readonly EXIT_USAGE=64
+
+usage() {
+  printf 'Usage: %s {set {needs-action|done|failed}|clear|render-window @<window-id>}\n' "${0##*/}" >&2
+}
+
+has_tmux() {
+  [[ -n "${TMUX:-}" ]] && command -v tmux >/dev/null 2>&1
+}
+
+valid_pane_id() {
+  [[ "$1" =~ ^%[0-9]+$ ]]
+}
+
+valid_window_id() {
+  [[ "$1" =~ ^@[0-9]+$ ]]
+}
+
+refresh_status() {
+  tmux refresh-client -S >/dev/null 2>&1 || true
+}
+
+set_status() {
+  local state="$1"
+
+  case "$state" in
+    needs-action|done|failed) ;;
+    *)
+      printf 'Invalid agent status: %s\n' "$state" >&2
+      return "$EXIT_USAGE"
+      ;;
+  esac
+
+  has_tmux || return 0
+  [[ -n "${TMUX_PANE:-}" ]] || return 0
+  if ! valid_pane_id "$TMUX_PANE"; then
+    printf 'Invalid TMUX_PANE: %s\n' "$TMUX_PANE" >&2
+    return "$EXIT_USAGE"
+  fi
+
+  tmux set-option -p -t "$TMUX_PANE" "$STATUS_OPTION" "$state" >/dev/null 2>&1 || return 0
+  refresh_status
+}
+
+clear_status() {
+  has_tmux || return 0
+  [[ -n "${TMUX_PANE:-}" ]] || return 0
+  if ! valid_pane_id "$TMUX_PANE"; then
+    printf 'Invalid TMUX_PANE: %s\n' "$TMUX_PANE" >&2
+    return "$EXIT_USAGE"
+  fi
+
+  tmux set-option -p -q -u -t "$TMUX_PANE" "$STATUS_OPTION" >/dev/null 2>&1 || true
+  refresh_status
+}
+
+render_window() {
+  local window_id="$1"
+  local states
+
+  if ! valid_window_id "$window_id"; then
+    printf 'Invalid tmux window id: %s\n' "$window_id" >&2
+    return "$EXIT_USAGE"
+  fi
+  has_tmux || return 0
+
+  states="$(tmux list-panes -t "$window_id" -F "#{${STATUS_OPTION}}" 2>/dev/null)" || return 0
+
+  if grep -Fxq 'needs-action' <<<"$states"; then
+    printf ' #[fg=#e5c890]󰋗#[fg=#c6d0f5]'
+  elif grep -Fxq 'failed' <<<"$states"; then
+    printf ' #[fg=#e78284]󰅖#[fg=#c6d0f5]'
+  elif grep -Fxq 'done' <<<"$states"; then
+    printf ' #[fg=#a6d189]󰄬#[fg=#c6d0f5]'
+  fi
+}
+
+main() {
+  local command="${1:-}"
+
+  case "$command" in
+    set)
+      [[ $# -eq 2 ]] || { usage; return "$EXIT_USAGE"; }
+      set_status "$2"
+      ;;
+    clear)
+      [[ $# -eq 1 ]] || { usage; return "$EXIT_USAGE"; }
+      clear_status
+      ;;
+    render-window)
+      [[ $# -eq 2 ]] || { usage; return "$EXIT_USAGE"; }
+      render_window "$2"
+      ;;
+    *)
+      usage
+      return "$EXIT_USAGE"
+      ;;
+  esac
+}
+
+main "$@"
