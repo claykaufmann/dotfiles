@@ -1,4 +1,5 @@
 {
+  "model": "opus",
   "hooks": {
     "SessionStart": [
       {
@@ -181,6 +182,5 @@
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
-  "theme": "auto",
-  "model": "opus"
+  "theme": "auto"
 }
