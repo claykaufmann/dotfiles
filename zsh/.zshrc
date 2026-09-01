@@ -1,6 +1,6 @@
 # OPENSPEC:START
 # OpenSpec shell completions configuration
-fpath=("/Users/ckaufmann/.zsh/completions" $fpath)
+fpath=("$HOME/.zsh/completions" $fpath)
 autoload -Uz compinit
 compinit
 # OPENSPEC:END
@@ -135,7 +135,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 # ~~~ poetry
-export PATH="/Users/claykaufmann/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 
 # ~~~ emacs path modification
 export PATH="$HOME/.emacs.d/bin:$PATH"
@@ -168,10 +168,10 @@ ZSH_HIGHLIGHT_STYLES[arg0]='fg=#8fee96'
 eval "$(direnv hook zsh)"
 
 # for pdm
-export PATH=/Users/ckaufmann/.local/bin:$PATH
+export PATH=$HOME/.local/bin:$PATH
 
 # add git-filter-repo
-export PATH=/Users/ckaufmann/scripts/git-filter-repo:$PATH
+export PATH=$HOME/scripts/git-filter-repo:$PATH
 
 # disable brew autoupdate
 export HOMEBREW_NO_AUTO_UPDATE=1
@@ -197,7 +197,7 @@ purge-cdk-out() {
 }
 
 # pnpm
-export PNPM_HOME="/Users/ckaufmann/Library/pnpm"
+export PNPM_HOME="$HOME/Library/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
@@ -205,10 +205,14 @@ esac
 # pnpm end
 
 # bun completions
-[ -s "/Users/ckaufmann/.bun/_bun" ] && source "/Users/ckaufmann/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
 export XDG_CONFIG_HOME="$HOME/.config"
+
+# ~~~ machine-specific config (not tracked in dotfiles) ~~~
+# work box puts CLAUDE_CODE_USE_BEDROCK / ANTHROPIC_MODEL etc. here
+[ -s "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"

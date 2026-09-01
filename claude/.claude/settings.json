@@ -1,41 +1,11 @@
 {
-  "env": {
-    "CLAUDE_CODE_USE_BEDROCK": "true",
-    "ANTHROPIC_MODEL": "us.anthropic.claude-sonnet-4-6",
-    "ANTHROPIC_SMALL_FAST_MODEL": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
-  },
-  "model": "us.anthropic.claude-opus-5",
-  "statusLine": {
-    "type": "command",
-    "command": "bash \"/Users/ckaufmann/.claude/plugins/cache/caveman/caveman/63e797cd753b/hooks/caveman-statusline.sh\""
-  },
-  "enabledPlugins": {
-    "feature-dev@claude-code-plugins": true,
-    "pyright-lsp@claude-plugins-official": true,
-    "caveman@caveman": true,
-    "context-mode@context-mode": true
-  },
-  "extraKnownMarketplaces": {
-    "caveman": {
-      "source": {
-        "source": "github",
-        "repo": "JuliusBrussee/caveman"
-      }
-    }
-  },
-  "syntaxHighlightingDisabled": false,
-  "effortLevel": "high",
-  "skipDangerousModePermissionPrompt": true,
-  "skipWorkflowUsageWarning": true,
-  "theme": "auto",
   "hooks": {
     "SessionStart": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/Users/ckaufmann/.claude/hooks/tmux-agent-status.sh\" clear",
+            "command": "bash \"$HOME/.claude/hooks/tmux-agent-status.sh\" clear",
             "timeout": 2
           }
         ]
@@ -46,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/Users/ckaufmann/.claude/hooks/tmux-agent-status.sh\" clear",
+            "command": "bash \"$HOME/.claude/hooks/tmux-agent-status.sh\" clear",
             "timeout": 2
           }
         ]
@@ -58,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/Users/ckaufmann/.claude/hooks/tmux-agent-status.sh\" needs-action",
+            "command": "bash \"$HOME/.claude/hooks/tmux-agent-status.sh\" needs-action",
             "timeout": 2
           }
         ]
@@ -70,7 +40,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/Users/ckaufmann/.claude/hooks/tmux-agent-status.sh\" clear",
+            "command": "bash \"$HOME/.claude/hooks/tmux-agent-status.sh\" clear",
             "timeout": 2
           }
         ]
@@ -79,7 +49,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/Users/ckaufmann/.claude/hooks/tmux-agent-status.sh\" clear",
+            "command": "bash \"$HOME/.claude/hooks/tmux-agent-status.sh\" clear",
             "timeout": 2
           }
         ]
@@ -91,7 +61,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/Users/ckaufmann/.claude/hooks/tmux-agent-status.sh\" clear",
+            "command": "bash \"$HOME/.claude/hooks/tmux-agent-status.sh\" clear",
             "timeout": 2
           }
         ]
@@ -100,7 +70,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/Users/ckaufmann/.claude/hooks/tmux-agent-status.sh\" clear",
+            "command": "bash \"$HOME/.claude/hooks/tmux-agent-status.sh\" clear",
             "timeout": 2
           }
         ]
@@ -111,7 +81,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/Users/ckaufmann/.claude/hooks/tmux-agent-status.sh\" needs-action",
+            "command": "bash \"$HOME/.claude/hooks/tmux-agent-status.sh\" needs-action",
             "timeout": 2
           }
         ]
@@ -122,7 +92,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/Users/ckaufmann/.claude/hooks/tmux-agent-status.sh\" needs-action",
+            "command": "bash \"$HOME/.claude/hooks/tmux-agent-status.sh\" needs-action",
             "timeout": 2
           }
         ]
@@ -133,7 +103,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/Users/ckaufmann/.claude/hooks/tmux-agent-status.sh\" clear",
+            "command": "bash \"$HOME/.claude/hooks/tmux-agent-status.sh\" clear",
             "timeout": 2
           }
         ]
@@ -145,7 +115,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/Users/ckaufmann/.claude/hooks/tmux-agent-status.sh\" needs-action",
+            "command": "bash \"$HOME/.claude/hooks/tmux-agent-status.sh\" needs-action",
             "timeout": 2
           }
         ]
@@ -155,7 +125,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/Users/ckaufmann/.claude/hooks/tmux-agent-status.sh\" done",
+            "command": "bash \"$HOME/.claude/hooks/tmux-agent-status.sh\" done",
             "timeout": 2
           }
         ]
@@ -166,7 +136,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/Users/ckaufmann/.claude/hooks/tmux-agent-status.sh\" stop",
+            "command": "bash \"$HOME/.claude/hooks/tmux-agent-status.sh\" stop",
             "timeout": 2
           }
         ]
@@ -177,7 +147,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/Users/ckaufmann/.claude/hooks/tmux-agent-status.sh\" failed",
+            "command": "bash \"$HOME/.claude/hooks/tmux-agent-status.sh\" failed",
             "timeout": 2
           }
         ]
@@ -188,11 +158,17 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/Users/ckaufmann/.claude/hooks/tmux-agent-status.sh\" clear",
+            "command": "bash \"$HOME/.claude/hooks/tmux-agent-status.sh\" clear",
             "timeout": 2
           }
         ]
       }
     ]
-  }
+  },
+  "syntaxHighlightingDisabled": false,
+  "effortLevel": "high",
+  "skipDangerousModePermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
+  "theme": "auto",
+  "tui": "fullscreen"
 }
