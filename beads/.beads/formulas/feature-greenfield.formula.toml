@@ -63,10 +63,16 @@ Turn that one sentence into something testable, and draw the boundary.
 - Note the edge cases and failure modes that must be handled, and the ones
   deliberately deferred.
 
-Record the result as a comment on this bead (`bd comment`) so it survives
-compaction and the design step can read it back.
+Record the acceptance criteria on this bead's structured field so downstream
+steps and tooling can read it without re-parsing prose:
 
-Done when: acceptance criteria and non-goals are written down and unambiguous.
+    bd update <this-id> --acceptance="<criteria + non-goals, as written above>"
+
+Also leave a comment (`bd comment`) with the full reasoning if the field alone
+would lose context.
+
+Done when: acceptance criteria and non-goals are written down, unambiguous, and
+recorded via --acceptance.
 """
 
 [[steps]]
@@ -114,13 +120,38 @@ Write the technical design. Cheap to change now, expensive after scaffold.
   the survey step.
 - Failure behavior: what happens on invalid input, partial failure, and
   rollback. Match how the surrounding code already handles these.
-- Alternatives considered and why rejected. One paragraph. If there were no
-  alternatives, the design is probably underspecified.
+- Alternatives considered and why rejected. If there were no alternatives, the
+  design is probably underspecified. For each alternative worth a reader's
+  attention, record it as its own decision bead rather than a buried paragraph:
+
+      bd create "<alternative, e.g. 'Store X in Redis instead of Postgres'>" \
+        --type decision \
+        --description "## Decision
+      <what was chosen instead>
+
+      ## Rationale
+      <why the chosen approach won>
+
+      ## Alternatives Considered
+      - **<this alternative>**: <why rejected>
+
+      ## Affects
+      - {{feature}} design"
+      bd dep add <decision-id> <this-design-id> --type related
+
+  This makes rejected alternatives searchable project-wide (`bd search
+  "<term>" --type decision`) instead of trapped in one bead's prose.
 - Migration/rollout: flag, config default, backfill, or none — say which.
 
 Keep it proportional: a page for most features, not a treatise.
 
-Done when: the design is written and someone else could implement from it.
+Record the final design on this bead's structured field, not just as prose in
+the description:
+
+    bd update <this-design-id> --design="<the design, as written above>"
+
+Done when: the design is recorded via --design, every considered alternative
+has a linked decision bead, and someone else could implement from it.
 """
 
 [[steps]]
