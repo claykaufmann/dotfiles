@@ -1,0 +1,412 @@
+formula = "feature-greenfield"
+description = "Greenfield feature development: scope and design before code, one hard human gate before implementation, ship behind review."
+version = 1
+type = "workflow"
+phase = "liquid"
+
+# ---------------------------------------------------------------------------
+# Variables
+# ---------------------------------------------------------------------------
+
+[vars.feature]
+description = "Short kebab-case slug for the feature (e.g. dark-mode, csv-export)"
+required = true
+pattern = "^[a-z0-9][a-z0-9-]*$"
+
+[vars.goal]
+description = "One sentence: what a user can do after this ships that they cannot do today"
+required = true
+
+[vars.ci_workflow]
+description = "GitHub Actions workflow file the CI gate watches"
+default = "ci.yml"
+
+# ---------------------------------------------------------------------------
+# Bond points — where to attach optional work without editing this formula
+# ---------------------------------------------------------------------------
+
+[[compose.bond_points]]
+id = "entry"
+description = "Attach upstream research or discovery work before scoping starts"
+before_step = "spec"
+
+[[compose.bond_points]]
+id = "pre-design"
+description = "Attach a spike/prototype molecule here when the design has an unknown worth de-risking first"
+before_step = "design"
+
+[[compose.bond_points]]
+id = "pre-merge"
+description = "Attach extra pre-merge work: security review, perf benchmark, migration rehearsal"
+before_step = "merge"
+
+# ---------------------------------------------------------------------------
+# Phase 1 — Discovery (parallel)
+# ---------------------------------------------------------------------------
+
+[[steps]]
+id = "spec"
+title = "Scope {{feature}}: acceptance criteria and non-goals"
+type = "task"
+priority = 1
+labels = ["feature-workflow", "phase:discovery"]
+description = """
+Goal: {{goal}}
+
+Turn that one sentence into something testable, and draw the boundary.
+
+- Restate the goal in your own words. If it is ambiguous, ask rather than assume.
+- Write acceptance criteria as observable behaviors, not implementation steps.
+  Each one should be checkable by a test or a person driving the app.
+- Write explicit NON-GOALS. This is the part that prevents scope creep later;
+  self-review checks the diff against this list.
+- Note the edge cases and failure modes that must be handled, and the ones
+  deliberately deferred.
+
+Record the acceptance criteria on this bead's structured field so downstream
+steps and tooling can read it without re-parsing prose:
+
+    bd update <this-id> --acceptance="<criteria + non-goals, as written above>"
+
+Also leave a comment (`bd comment`) with the full reasoning if the field alone
+would lose context.
+
+Done when: acceptance criteria and non-goals are written down, unambiguous, and
+recorded via --acceptance.
+"""
+
+[[steps]]
+id = "survey"
+title = "Survey the codebase for where {{feature}} attaches"
+type = "task"
+priority = 1
+labels = ["feature-workflow", "phase:discovery"]
+description = """
+Greenfield code still has to look like it belongs. Find out what "belongs"
+means here before designing anything.
+
+- Locate the closest prior art: an existing feature of similar shape. Read it.
+- Identify the seam this feature attaches to (router, registry, plugin table,
+  config, DI container, migration chain).
+- Record the project's conventions: module layout, naming, error handling,
+  logging, config access, test framework and test file placement.
+- Record the exact commands for build, typecheck, lint, and test — the verify
+  step will run them and should not have to rediscover them.
+
+Record findings as a comment on this bead.
+
+Done when: you can name the files this feature will add, the file it will
+attach to, and the four verification commands.
+"""
+
+# ---------------------------------------------------------------------------
+# Phase 2 — Design, and the gate that matters
+# ---------------------------------------------------------------------------
+
+[[steps]]
+id = "design"
+title = "Design {{feature}}"
+type = "task"
+priority = 1
+labels = ["feature-workflow", "phase:design"]
+needs = ["spec", "survey"]
+description = """
+Write the technical design. Cheap to change now, expensive after scaffold.
+
+- Data model: new types/tables/schemas, and how they relate to what exists.
+- Public interface: the functions, endpoints, or components this exposes, with
+  signatures. This is what the scaffold step will write verbatim.
+- File layout: every file to be added or modified, in the conventions found by
+  the survey step.
+- Failure behavior: what happens on invalid input, partial failure, and
+  rollback. Match how the surrounding code already handles these.
+- Alternatives considered and why rejected. If there were no alternatives, the
+  design is probably underspecified. For each alternative worth a reader's
+  attention, record it as its own decision bead rather than a buried paragraph:
+
+      bd create "<alternative, e.g. 'Store X in Redis instead of Postgres'>" \
+        --type decision \
+        --description "## Decision
+      <what was chosen instead>
+
+      ## Rationale
+      <why the chosen approach won>
+
+      ## Alternatives Considered
+      - **<this alternative>**: <why rejected>
+
+      ## Affects
+      - {{feature}} design"
+      bd dep add <decision-id> <this-design-id> --type related
+
+  This makes rejected alternatives searchable project-wide (`bd search
+  "<term>" --type decision`) instead of trapped in one bead's prose.
+- Migration/rollout: flag, config default, backfill, or none — say which.
+
+Keep it proportional: a page for most features, not a treatise.
+
+Record the final design on this bead's structured field, not just as prose in
+the description:
+
+    bd update <this-design-id> --design="<the design, as written above>"
+
+Done when: the design is recorded via --design, every considered alternative
+has a linked decision bead, and someone else could implement from it.
+"""
+
+[[steps]]
+id = "design-signoff"
+title = "Sign off on the {{feature}} design"
+type = "task"
+priority = 1
+labels = ["feature-workflow", "phase:design", "gate"]
+needs = ["design"]
+description = """
+Human review of the spec and design, before any implementation exists.
+
+This is the highest-leverage checkpoint in the workflow: redirecting here costs
+a conversation, redirecting after implement costs a rewrite.
+
+Reviewer checks:
+- Do the acceptance criteria describe the feature actually wanted?
+- Are the non-goals the right boundary?
+- Does the design fit the codebase's existing shape?
+- Is anything load-bearing left unspecified?
+
+Requested changes go on this bead as comments; revise the design bead and
+resolve this gate once the design is approved.
+
+Resolve with: bd gate resolve <gate-id>
+"""
+
+[steps.gate]
+type = "human"
+
+# ---------------------------------------------------------------------------
+# Phase 3 — Build
+# ---------------------------------------------------------------------------
+
+[[steps]]
+id = "scaffold"
+title = "Scaffold {{feature}}: interfaces and stubs"
+type = "task"
+priority = 1
+labels = ["feature-workflow", "phase:build"]
+needs = ["design-signoff"]
+description = """
+Create the skeleton the approved design describes — shape only, no behavior.
+
+- Add the files from the design's file layout.
+- Write the public interfaces and type definitions exactly as designed.
+- Stub the bodies (raise/throw "not implemented", or return a zero value).
+- Make it build and typecheck. Do not wire it into the app yet.
+
+Committing to the interface as its own step means the next steps have a fixed
+target, and an interface that turns out to be wrong is caught while it costs
+nothing.
+
+Done when: the module exists, typechecks, and exposes the designed interface.
+"""
+
+[[steps]]
+id = "tests"
+title = "Write failing tests for {{feature}}"
+type = "task"
+priority = 1
+labels = ["feature-workflow", "phase:build"]
+needs = ["scaffold"]
+description = """
+Translate each acceptance criterion from the spec bead into a test against the
+scaffolded interface.
+
+- One test per acceptance criterion, at minimum. Name them after the behavior.
+- Cover the edge cases the spec said were in scope.
+- Follow the project's existing test conventions found in the survey step.
+- Run them. They must FAIL, and fail for the right reason (not-implemented, not
+  a typo or import error). A test that passes against stubs is testing nothing.
+
+Done when: every acceptance criterion has a test, and the suite fails cleanly.
+"""
+
+[[steps]]
+id = "implement"
+title = "Implement {{feature}}"
+type = "task"
+priority = 1
+labels = ["feature-workflow", "phase:build"]
+needs = ["tests"]
+description = """
+Fill in the stubs until the tests from the previous step pass.
+
+- Work to the design. If implementation reveals the design was wrong, stop and
+  say so on this bead rather than quietly diverging — the design bead and the
+  signoff were the agreement.
+- Do not add behavior that no acceptance criterion asked for.
+- Do not weaken a test to make it pass.
+- Handle the failure modes the design specified.
+
+Done when: the feature's tests pass and no pre-existing test broke.
+"""
+
+[[steps]]
+id = "integrate"
+title = "Wire {{feature}} into the application"
+type = "task"
+priority = 1
+labels = ["feature-workflow", "phase:build"]
+needs = ["implement"]
+description = """
+Attach the module to the seam identified in the survey step.
+
+- Register/route/mount it wherever the codebase expects.
+- Add configuration with a safe default, and the feature flag if the design
+  called for one (default off unless the design says otherwise).
+- Add migrations, seeds, or fixtures if the data model changed.
+- Exercise the feature through the real running application, not just tests.
+
+Done when: the feature is reachable by a user through the actual app.
+"""
+
+[[steps]]
+id = "docs"
+title = "Document {{feature}}"
+type = "chore"
+priority = 2
+labels = ["feature-workflow", "phase:build"]
+needs = ["implement"]
+description = """
+Runs in parallel with integration — the interface is settled by now.
+
+- Doc comments on the public interface.
+- README / user-facing docs if the feature is user-visible.
+- CHANGELOG entry if the project keeps one.
+- Config and flag documentation, including the default and how to enable it.
+
+Match the depth of the surrounding docs. If the project documents nothing,
+doc comments on the public interface are enough — close this and move on.
+
+Done when: someone who did not build this can find out how to use it.
+"""
+
+# ---------------------------------------------------------------------------
+# Phase 4 — Verify
+# ---------------------------------------------------------------------------
+
+[[steps]]
+id = "verify"
+title = "Run quality gates for {{feature}}"
+type = "task"
+priority = 1
+labels = ["feature-workflow", "phase:verify"]
+needs = ["integrate"]
+description = """
+Run the four commands recorded in the survey bead, on the full project — not
+just this feature's files:
+
+- build
+- typecheck
+- lint
+- full test suite
+
+Report the actual output. If something fails, fix it or file a bead; do not
+close this step with a failing gate and a note that it is unrelated.
+
+Then drive the feature manually through the running app once more and confirm
+each acceptance criterion by hand.
+
+Done when: all four gates pass on the full project and the criteria hold in
+the real app.
+"""
+
+[[steps]]
+id = "self-review"
+title = "Self-review the {{feature}} diff"
+type = "task"
+priority = 1
+labels = ["feature-workflow", "phase:verify"]
+needs = ["verify", "docs"]
+description = """
+Read the complete diff (`git diff main...`) as an unsympathetic reviewer who
+did not write it.
+
+- Scope: does anything in this diff serve something on the NON-GOALS list?
+  Remove it.
+- Dead code: stubs, debug logging, commented-out attempts, unused imports.
+- Duplication: did you rebuild something the survey step found already exists?
+- Simplification: the shortest version of this change that still passes.
+- Consistency: does it read like the code around it, or like a transplant?
+
+Fix what you find here rather than filing it. Anything deliberately deferred
+becomes a new bead, linked to this one.
+
+Done when: the diff is one you would approve if someone else sent it.
+"""
+
+# ---------------------------------------------------------------------------
+# Phase 5 — Ship
+# ---------------------------------------------------------------------------
+
+[[steps]]
+id = "pr"
+title = "Open PR for {{feature}}"
+type = "task"
+priority = 1
+labels = ["feature-workflow", "phase:ship"]
+needs = ["self-review"]
+description = """
+Push the branch and open the pull request.
+
+The description should carry the context a reviewer needs without making them
+reconstruct it:
+- What this does and why ({{goal}}).
+- The acceptance criteria, as a checklist.
+- Design decisions worth flagging, and alternatives rejected.
+- What is explicitly out of scope, and any follow-up beads filed.
+- How to exercise it manually.
+
+Done when: the PR is open and its number is recorded on this bead.
+"""
+
+[[steps]]
+id = "ci"
+title = "Wait for CI on the {{feature}} PR"
+type = "task"
+priority = 1
+labels = ["feature-workflow", "phase:ship", "gate"]
+needs = ["pr"]
+description = """
+Parked until the {{ci_workflow}} run completes successfully. No polling — the
+gate closes on `bd gate check` and this step returns to the ready frontier.
+
+If CI fails, fix it on the branch; the gate re-evaluates on the next check.
+
+Check with: bd gate check
+"""
+
+[steps.gate]
+type = "gh:run"
+id = "{{ci_workflow}}"
+timeout = "30m"
+
+[[steps]]
+id = "merge"
+title = "Merge {{feature}} and close out"
+type = "task"
+priority = 1
+labels = ["feature-workflow", "phase:ship", "gate"]
+needs = ["ci"]
+description = """
+Blocked on human approval of the PR. Once the gate is resolved:
+
+- Merge, and delete the branch.
+- Confirm the feature works on the target branch after merge.
+- If it shipped behind a flag, record what enabling it requires and who does it.
+- File beads for everything deferred along the way — the non-goals worth
+  revisiting, the follow-ups from self-review, the flag cleanup.
+- Close the molecule root (`bd epic close-eligible` will not close it for you).
+
+Resolve with: bd gate resolve <gate-id>
+"""
+
+[steps.gate]
+type = "human"

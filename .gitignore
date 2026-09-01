@@ -6,3 +6,10 @@ lazygit/.config/lazygit/state.yml
 .pi/
 
 !pi/.pi/
+
+# `.beads/` is ignored via .git/info/exclude (stealth-mode bd init) so this
+# repo's own beads DB stays untracked. That pattern matches at any depth, which
+# would also swallow the stow package below. .gitignore outranks info/exclude,
+# so re-include the package directory itself — same trick as !pi/.pi/ above.
+# Nothing here is a database; it's the shared workflow formulas.
+!beads/.beads/

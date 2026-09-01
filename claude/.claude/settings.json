@@ -1,4 +1,5 @@
 {
+  "model": "opus",
   "hooks": {
     "SessionStart": [
       {
@@ -165,10 +166,21 @@
       }
     ]
   },
+  "enabledPlugins": {
+    "beads@beads-marketplace": true
+  },
+  "extraKnownMarketplaces": {
+    "beads-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "gastownhall/beads"
+      }
+    }
+  },
   "syntaxHighlightingDisabled": false,
   "effortLevel": "high",
+  "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
-  "theme": "auto",
-  "tui": "fullscreen"
+  "theme": "auto"
 }

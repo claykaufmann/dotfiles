@@ -1,0 +1,278 @@
+# Rename this file to <name>.formula.toml and set `formula` to the same stem.
+# Save under ~/dotfiles/beads/.beads/formulas/ (stow-symlinked to ~/.beads/formulas).
+# Validate with:  bd formula show <name> --json  &&  bd mol pour <name> --dry-run
+
+formula = "skeleton"
+description = "One line: what this workflow accomplishes, and its shape."
+version = 1
+type = "workflow"
+phase = "liquid"    # "vapor" for operational runs with no audit value
+
+# ---------------------------------------------------------------------------
+# Variables — every {{placeholder}} used below is implicitly required; declare
+# each one here so `bd formula show` documents it. Note: `pattern` and `enum`
+# are documentation only, NOT enforced at pour, so restate them in description.
+# ---------------------------------------------------------------------------
+
+[vars.subject]
+description = "Short kebab-case slug for the thing being worked (e.g. dark-mode)"
+required = true
+pattern = "^[a-z0-9][a-z0-9-]*$"
+
+[vars.goal]
+description = "One sentence: what is true after this ships that is not true today"
+required = true
+
+[vars.ci_workflow]
+description = "GitHub Actions workflow file the CI gate watches"
+default = "ci.yml"
+
+# ---------------------------------------------------------------------------
+# Bond points — named seams where other work can be composed in later,
+# without editing this formula. Consumed by `bd mol bond`.
+# ---------------------------------------------------------------------------
+
+[[compose.bond_points]]
+id = "entry"
+description = "Attach upstream research or discovery before scoping starts"
+before_step = "scope"
+
+[[compose.bond_points]]
+id = "pre-ship"
+description = "Attach extra pre-ship work: security review, perf benchmark"
+before_step = "ship"
+
+# ---------------------------------------------------------------------------
+# Phase 1 — Discovery. No `needs`, so these become ready together.
+# ---------------------------------------------------------------------------
+
+[[steps]]
+id = "scope"
+title = "Scope {{subject}}: acceptance criteria and non-goals"
+type = "task"
+priority = 1
+labels = ["skeleton-workflow", "phase:discovery"]
+description = """
+Goal: {{goal}}
+
+Turn that sentence into something checkable, and draw the boundary.
+
+- Write acceptance criteria as observable behaviors, not implementation steps.
+- Write explicit NON-GOALS — this is what prevents scope creep later.
+- Note the edge cases in scope, and the ones deliberately deferred.
+
+Record the result as a comment on this bead (`bd comment`) so it survives
+compaction and later steps can read it back.
+
+Done when: acceptance criteria and non-goals are written down and unambiguous.
+"""
+
+[[steps]]
+id = "survey"
+title = "Survey the codebase for where {{subject}} attaches"
+type = "task"
+priority = 1
+labels = ["skeleton-workflow", "phase:discovery"]
+description = """
+Find out what "belongs here" means before designing anything.
+
+- Locate the closest prior art and read it.
+- Identify the seam this attaches to (router, registry, config, migration chain).
+- Record conventions: module layout, naming, error handling, test placement.
+- Record the exact build, typecheck, lint, and test commands — the verify step
+  runs them and should not have to rediscover them.
+
+Record findings as a comment on this bead.
+
+Done when: you can name the files to add, the file to modify, and the four
+verification commands.
+"""
+
+# ---------------------------------------------------------------------------
+# Phase 2 — Design, and the gate that matters. Joins both discovery steps.
+# ---------------------------------------------------------------------------
+
+[[steps]]
+id = "design"
+title = "Design {{subject}}"
+type = "task"
+priority = 1
+labels = ["skeleton-workflow", "phase:design"]
+needs = ["scope", "survey"]
+description = """
+Write the technical design. Cheap to change now, expensive after code exists.
+
+- Data model and public interface, with signatures.
+- Every file to be added or modified, in the conventions the survey found.
+- Failure behavior: invalid input, partial failure, rollback.
+- Alternatives considered and why rejected. If there were none, the design is
+  probably underspecified.
+
+Done when: the design is written and someone else could implement from it.
+"""
+
+[[steps]]
+id = "design-signoff"
+title = "Sign off on the {{subject}} design"
+type = "task"
+priority = 1
+labels = ["skeleton-workflow", "phase:design", "gate"]
+needs = ["design"]
+description = """
+Human review before any implementation exists. Highest-leverage checkpoint in
+the workflow: redirecting here costs a conversation, redirecting after
+implementation costs a rewrite.
+
+Requested changes go on this bead as comments; revise the design bead, then
+resolve this gate.
+
+Resolve with: bd gate resolve <gate-id>
+"""
+
+# The [steps.gate] table MUST sit directly under the [[steps]] block it gates.
+[steps.gate]
+type = "human"
+
+# ---------------------------------------------------------------------------
+# Phase 3 — Build
+# ---------------------------------------------------------------------------
+
+[[steps]]
+id = "implement"
+title = "Implement {{subject}}"
+type = "task"
+priority = 1
+labels = ["skeleton-workflow", "phase:build"]
+needs = ["design-signoff"]
+description = """
+Build to the approved design.
+
+- If implementation reveals the design was wrong, say so on this bead rather
+  than quietly diverging — the design and its signoff were the agreement.
+- Do not add behavior no acceptance criterion asked for.
+- Handle the failure modes the design specified.
+
+Done when: the acceptance criteria hold and no pre-existing test broke.
+"""
+
+[[steps]]
+id = "docs"
+title = "Document {{subject}}"
+type = "chore"
+priority = 2
+labels = ["skeleton-workflow", "phase:build"]
+needs = ["implement"]
+description = """
+Runs in parallel with verification — the interface is settled by now.
+
+Match the depth of the surrounding docs. If the project documents nothing, doc
+comments on the public interface are enough.
+
+Done when: someone who did not build this can find out how to use it.
+"""
+
+# ---------------------------------------------------------------------------
+# Phase 4 — Verify
+# ---------------------------------------------------------------------------
+
+[[steps]]
+id = "verify"
+title = "Run quality gates for {{subject}}"
+type = "task"
+priority = 1
+labels = ["skeleton-workflow", "phase:verify"]
+needs = ["implement"]
+description = """
+Run the four commands recorded on the survey bead, on the full project — build,
+typecheck, lint, full test suite.
+
+Report the actual output. If something fails, fix it or file a bead; do not
+close this step with a failing gate and a note that it is unrelated.
+
+Done when: all four gates pass on the full project and the acceptance criteria
+hold when exercised by hand.
+"""
+
+[[steps]]
+id = "self-review"
+title = "Self-review the {{subject}} diff"
+type = "task"
+priority = 1
+labels = ["skeleton-workflow", "phase:verify"]
+needs = ["verify", "docs"]
+description = """
+Read the complete diff as an unsympathetic reviewer who did not write it.
+
+- Scope: does anything here serve something on the NON-GOALS list? Remove it.
+- Dead code, debug logging, commented-out attempts, unused imports.
+- Duplication: did you rebuild something the survey already found?
+- Consistency: does it read like the code around it, or like a transplant?
+
+Fix what you find rather than filing it. Deliberately deferred work becomes a
+new bead linked to this one.
+
+Done when: the diff is one you would approve if someone else sent it.
+"""
+
+# ---------------------------------------------------------------------------
+# Phase 5 — Ship
+# ---------------------------------------------------------------------------
+
+[[steps]]
+id = "pr"
+title = "Open PR for {{subject}}"
+type = "task"
+priority = 1
+labels = ["skeleton-workflow", "phase:ship"]
+needs = ["self-review"]
+description = """
+Push the branch and open the pull request. The description carries the context
+a reviewer needs without making them reconstruct it: what this does and why
+({{goal}}), the acceptance criteria as a checklist, decisions worth flagging,
+what is out of scope, and how to exercise it manually.
+
+Done when: the PR is open and its number is recorded on this bead.
+"""
+
+[[steps]]
+id = "ci"
+title = "Wait for CI on the {{subject}} PR"
+type = "task"
+priority = 1
+labels = ["skeleton-workflow", "phase:ship", "gate"]
+needs = ["pr"]
+description = """
+Parked until the {{ci_workflow}} run completes successfully. No polling — the
+gate closes on `bd gate check` and this step returns to the ready frontier.
+
+If CI fails, fix it on the branch; the gate re-evaluates on the next check.
+
+Check with: bd gate check
+"""
+
+# Timeouts use Go duration syntax: 30m, 1h, 24h. There is no `d` unit.
+[steps.gate]
+type = "gh:run"
+id = "{{ci_workflow}}"
+timeout = "30m"
+
+[[steps]]
+id = "ship"
+title = "Merge {{subject}} and close out"
+type = "task"
+priority = 1
+labels = ["skeleton-workflow", "phase:ship", "gate"]
+needs = ["ci"]
+description = """
+Blocked on human approval. Once the gate is resolved:
+
+- Merge and delete the branch; confirm it works on the target branch after merge.
+- File beads for everything deferred along the way.
+- Close the molecule root — closing the last child does not close it
+  (`bd epic close-eligible` sweeps these).
+
+Resolve with: bd gate resolve <gate-id>
+"""
+
+[steps.gate]
+type = "human"

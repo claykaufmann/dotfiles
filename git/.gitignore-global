@@ -13,7 +13,7 @@ fdsa.py
 .dolt/
 
 # Agent/planning artifacts
-AGENTS.md
+AGENTS.base.md
 openspec*
 opsx*
 .claude/commands/plan/
