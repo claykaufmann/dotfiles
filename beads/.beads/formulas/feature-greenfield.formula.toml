@@ -1,6 +1,6 @@
 formula = "feature-greenfield"
 description = "Greenfield feature development: scope and design before code, one hard human gate before implementation, ship behind review."
-version = 1
+version = 2
 type = "workflow"
 phase = "liquid"
 
@@ -150,37 +150,30 @@ the description:
 
     bd update <this-design-id> --design="<the design, as written above>"
 
-Done when: the design is recorded via --design, every considered alternative
-has a linked decision bead, and someone else could implement from it.
-"""
+When the design is recorded, STOP. A human gate blocks the scaffold step, and
+resolving it is not your move — not even if the human is in the conversation
+and says yes on the spot. Hand them:
 
-[[steps]]
-id = "design-signoff"
-title = "Sign off on the {{feature}} design"
-type = "task"
-priority = 1
-labels = ["feature-workflow", "phase:design", "gate"]
-needs = ["design"]
-description = """
-Human review of the spec and design, before any implementation exists.
+- the spec, survey, design, and decision bead ids, so they can review each
+- a short recap: the goal, the acceptance criteria, the design's key decisions,
+  and the alternatives rejected
+- the gate id from `bd gate list` — the row reading `Async gate for step
+  scaffold` — and the command that unblocks the workflow:
 
-This is the highest-leverage checkpoint in the workflow: redirecting here costs
-a conversation, redirecting after implement costs a rewrite.
+      bd gate resolve <gate-id> -r "<why it was approved>"
 
-Reviewer checks:
+Design to what they will actually check:
 - Do the acceptance criteria describe the feature actually wanted?
 - Are the non-goals the right boundary?
 - Does the design fit the codebase's existing shape?
 - Is anything load-bearing left unspecified?
 
-Requested changes go on this bead as comments; revise the design bead and
-resolve this gate once the design is approved.
+Requested changes come back as comments on this bead: revise, and hand it back.
 
-Resolve with: bd gate resolve <gate-id>
+Done when: the design is recorded via --design, every considered alternative has
+a linked decision bead, someone else could implement from it, and the human has
+the gate id and a recap. Do not resolve the gate yourself.
 """
-
-[steps.gate]
-type = "human"
 
 # ---------------------------------------------------------------------------
 # Phase 3 — Build
@@ -192,7 +185,7 @@ title = "Scaffold {{feature}}: interfaces and stubs"
 type = "task"
 priority = 1
 labels = ["feature-workflow", "phase:build"]
-needs = ["design-signoff"]
+needs = ["design"]
 description = """
 Create the skeleton the approved design describes — shape only, no behavior.
 
@@ -205,8 +198,14 @@ Committing to the interface as its own step means the next steps have a fixed
 target, and an interface that turns out to be wrong is caught while it costs
 nothing.
 
+A human resolved the gate blocking this step, which means they approved the
+design as written. Build what was approved, not what you would have designed.
+
 Done when: the module exists, typechecks, and exposes the designed interface.
 """
+
+[steps.gate]
+type = "human"
 
 [[steps]]
 id = "tests"
